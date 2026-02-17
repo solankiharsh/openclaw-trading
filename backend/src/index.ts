@@ -1,0 +1,537 @@
+import { Hono } from 'hono';
+import { cors } from 'hono/cors';
+import { logger } from 'hono/logger';
+import { serve } from 'bun';
+import { Server as HTTPServer } from 'http';
+import { env } from './lib/env';
+import { db } from './lib/db';
+import { HeliusWebSocketMonitor } from './services/helius-websocket.js';
+import { websocketEvents } from './services/websocket-events.js';
+import { DevPrintFeedService } from './services/devprint-feed.service.js';
+import { createBSCMonitor } from './services/bsc-monitor.js';
+import { createFourMemeMonitor } from './services/fourmeme-monitor.js';
+
+import { createSortinoCron } from './services/sortino-cron.js';
+import { createPredictionCron } from './services/prediction-cron.js';
+import { createMetricsMiddleware, getMetrics, getMetricsContentType, updateAgentMetrics, updateEpochMetrics } from './services/metrics.service.js';
+import { DistributedLockService, getReplicaId } from './services/distributed-lock.service.js';
+
+// Routes
+import { health } from './routes/health';
+import { auth } from './routes/auth';
+import { siwsAuthRoutes } from './routes/auth.siws';
+import { agent } from './routes/agent';
+import { trades } from './routes/trades';
+import { archetypes } from './routes/archetypes';
+import { internal } from './routes/internal';
+import { webhooks } from './routes/webhooks';
+import { feed } from './routes/feed';
+import { copyTrade } from './routes/copy-trade';
+import { ponzinomicsRoutes } from './routes/ponzinomics';
+import { positions } from './routes/positions';
+import { messaging } from './routes/messaging';
+import { voting } from './routes/voting';
+import { profile } from './routes/profile';
+import { agentAuth } from './routes/agent-auth.routes';
+import { skills } from './routes/skills';
+import { skillsGuide } from './routes/skills-guide';
+import { docsRoutes } from './routes/docs';
+import { swaggerRoutes } from './routes/swagger';
+import { siweAuthRoutes } from './routes/auth.siwe';
+import { bscRoutes } from './routes/bsc.routes';
+import { pumpfunRoutes } from './routes/pumpfun.routes';
+import { predictionRoutes } from './routes/prediction.routes';
+import { trading } from './routes/trading.routes';
+import { startAutoBuyExecutor, stopAutoBuyExecutor } from './services/auto-buy-executor';
+
+// USDC Hackathon Routes (Standardized Modules)
+import treasuryModule from './modules/treasury/treasury.routes';
+import leaderboard from './modules/leaderboard/leaderboard.routes';
+import epochs from './modules/epoch/epoch.routes';
+import calls from './modules/scanner-calls/scanner-calls.routes';
+import arenaRoutes from './modules/arena/arena.routes';
+import arenaMeRoutes from './routes/arena-me.routes';
+import agentConfigRoutes from './routes/agent-config.routes';
+import taskRoutes from './modules/tasks/tasks.routes';
+import newsRoutes from './modules/news/news.routes';
+import { systemRoutes, setDevPrintFeedGetter } from './routes/system.routes';
+
+const app = new Hono();
+
+function envFlag(name: string, defaultValue: boolean): boolean {
+  const raw = process.env[name];
+  if (!raw) return defaultValue;
+  return raw.toLowerCase() === 'true';
+}
+
+// Global Helius monitor instance (for dynamic wallet management)
+let heliusMonitor: HeliusWebSocketMonitor | null = null;
+
+// DevPrint feed service (market intelligence relay)
+let devprintFeed: DevPrintFeedService | null = null;
+
+// Export function to get monitor instance
+export function getHeliusMonitor(): HeliusWebSocketMonitor | null {
+  return heliusMonitor;
+}
+
+// Export function to get DevPrint feed instance
+export function getDevPrintFeed(): DevPrintFeedService | null {
+  return devprintFeed;
+}
+
+// CORS Configuration - Allow frontend origins
+const allowedOrigins = [
+  'http://localhost:3000',
+  'http://localhost:8081',
+  'exp://localhost:8081',
+  'https://sr-mobile-production.up.railway.app',
+  'https://supermolt.xyz',
+  'https://www.supermolt.xyz',
+  'https://supermolt.app',
+  'https://www.supermolt.app',
+];
+
+// Middleware
+app.use('*', logger());
+app.use('*', createMetricsMiddleware()); // Prometheus metrics tracking
+app.use(
+  '*',
+  cors({
+    origin: (origin) => {
+      // Allow requests with no origin (mobile apps, Postman, etc.)
+      if (!origin) return origin;
+
+      // Check if origin matches allowed origins
+      for (const allowed of allowedOrigins) {
+        if (allowed === origin) {
+          return origin;
+        }
+      }
+
+      // Allow all Vercel deployment URLs
+      if (origin.match(/https:\/\/.*\.vercel\.app$/)) {
+        return origin;
+      }
+
+      return origin; // Allow all for now, can be restricted later
+    },
+    credentials: true,
+    allowMethods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowHeaders: ['Content-Type', 'Authorization', 'X-Helius-Signature'],
+    exposeHeaders: ['Content-Length', 'X-Request-Id'],
+    maxAge: 600,
+  })
+);
+
+// Public routes
+app.route('/health', health);
+
+// Prometheus metrics endpoint
+app.get('/metrics', async (c) => {
+  const metrics = await getMetrics();
+  return c.text(metrics, 200, {
+    'Content-Type': getMetricsContentType(),
+  });
+});
+
+app.route('/archetypes', archetypes);
+app.route('/webhooks', webhooks); // Helius webhooks (public, signature validated)
+app.route('/ponzinomics', ponzinomicsRoutes); // Ponzinomics analytics & trading
+// Agent onboarding (THE ONE COMMAND)
+app.route('/skills', skillsGuide); // Quickstart guide at /skills
+
+// Agent resources
+app.route('/skills/pack', skills); // JSON skill pack at /skills/pack
+app.route('/docs', docsRoutes); // Full documentation at /docs/*
+app.route('/swagger', swaggerRoutes); // Swagger UI at /swagger
+
+// Legacy alias
+app.get('/skill.md', (c) => {
+  return c.redirect('/skills', 301);
+});
+
+// Auth routes
+app.route('/auth', auth);
+app.route('/auth', siwsAuthRoutes); // SIWS agent auth (Solana)
+app.route('/auth', siweAuthRoutes); // SIWE agent auth (BSC/EVM)
+
+// Protected routes (JWT required)
+app.route('/agents', agent);
+app.route('/trades', trades);
+
+// Profile routes (GET is public, PUT requires auth)
+app.route('/profiles', profile);
+app.route('/feed', feed);
+
+app.route('/trades', copyTrade); // /trades/copy/* endpoints
+
+// Agent Coordination routes
+app.route('/positions', positions); // Position tracking
+app.route('/messaging', messaging); // Agent messaging
+app.route('/voting', voting); // Voting system
+app.route('/agent-auth', agentAuth); // Twitter auth + task verification
+
+// Trading routes (Agent trade execution via Jupiter)
+app.route('/trading', trading);
+
+// Treasury routes (USDC reward distribution)
+app.route('/treasury', treasuryModule); // Treasury management and USDC distribution
+
+// Internal routes (API key required — DevPrint → SR-Mobile)
+app.route('/internal', internal);
+
+// USDC Hackathon API Routes (Public for hackathon demo)
+app.route('/api/treasury', treasuryModule);
+app.route('/api/leaderboard', leaderboard);
+app.route('/api/epochs', epochs);
+app.route('/api/calls', calls);
+
+// BSC routes (token factory, treasury, monitoring)
+app.route('/bsc', bscRoutes);
+
+// Solana routes (pump.fun token launcher)
+app.route('/pumpfun', pumpfunRoutes);
+
+// Prediction market routes (Kalshi + future platforms)
+app.route('/prediction', predictionRoutes);
+
+// Arena routes (public, frontend arena page)
+app.route('/arena', arenaMeRoutes); // /arena/me — must be before generic arena routes
+app.route('/arena/me', agentConfigRoutes); // Agent configuration endpoints
+app.route('/arena', arenaRoutes);
+app.route('/arena/tasks', taskRoutes);
+
+// News routes (platform announcements, updates, partnerships)
+app.route('/news', newsRoutes);
+
+// System routes (pipeline status, agent config)
+app.route('/api/system', systemRoutes);
+
+// Root
+app.get('/', (c) => {
+  return c.json({
+    name: 'SR-Mobile API',
+    version: '0.3.0',
+    docs: '/health',
+    endpoints: {
+      health: '/health',
+      auth: '/auth/*',
+      agents: '/agents/*',
+      trades: '/trades/*',
+      usdc: {
+        treasury: '/api/treasury/*',
+        leaderboard: '/api/leaderboard/*',
+        epochs: '/api/epochs/*',
+        calls: '/api/calls/*'
+      },
+      bsc: {
+        auth: '/auth/evm/*',
+        tokens: '/bsc/tokens/*',
+        factory: '/bsc/factory/info',
+        treasury: '/bsc/treasury/*',
+      },
+      prediction: '/prediction/*'
+    }
+  });
+});
+
+// 404 handler
+app.notFound((c) => {
+  return c.json(
+    {
+      success: false,
+      error: {
+        code: 'NOT_FOUND',
+        message: `Route ${c.req.method} ${c.req.path} not found`,
+      },
+    },
+    404
+  );
+});
+
+// Error handler
+app.onError((err, c) => {
+  console.error('Unhandled error:', err);
+  return c.json(
+    {
+      success: false,
+      error: {
+        code: 'INTERNAL_ERROR',
+        message: 'An unexpected error occurred',
+      },
+    },
+    500
+  );
+});
+
+// Start Helius WebSocket Monitor (real-time transaction tracking)
+async function startHeliusMonitor() {
+  const heliusApiKey = process.env.HELIUS_API_KEY;
+
+  if (!heliusApiKey || heliusApiKey === 'your-helius-api-key') {
+    console.warn('⚠️  HELIUS_API_KEY not configured, WebSocket monitor disabled');
+    return;
+  }
+
+  // Tracked wallets for real-time monitoring (initial hardcoded wallets)
+  const trackedWallets = [
+    'DRhKVNHRwkh59puYfFekZxTNdaEqUGTzf692zoGtAoSy',
+    '9U5PtsCxkma37wwMRmPLeLVqwGHvHMs7fyLaL47ovmTn',
+    '48BbwbZHWc8QJBiuGJTQZD5aWZdP3i6xrDw5N9EHpump'
+  ];
+
+  try {
+    heliusMonitor = new HeliusWebSocketMonitor(heliusApiKey, trackedWallets, db);
+
+    // Start in background
+    heliusMonitor.start().catch((error) => {
+      console.error('❌ Helius monitor failed to start:', error);
+    });
+
+    // Load user-defined tracked wallets from DB into monitor
+    try {
+      const userWallets = await db.trackedWallet.findMany({
+        where: { chain: 'SOLANA' },
+        select: { address: true },
+      });
+      let added = 0;
+      for (const w of userWallets) {
+        if (!trackedWallets.includes(w.address)) {
+          heliusMonitor.addWallet(w.address);
+          added++;
+        }
+      }
+      if (added > 0) {
+        console.log(`✅ Loaded ${added} user-tracked Solana wallets from DB`);
+      }
+    } catch (err) {
+      console.warn('⚠️  Failed to load tracked wallets from DB:', err);
+    }
+
+    console.log('✅ Helius monitor instance saved globally (dynamic wallet support enabled)');
+
+    // Graceful shutdown
+    process.on('SIGTERM', async () => {
+      console.log('\n🛑 Shutting down...');
+      if (heliusMonitor) {
+        await heliusMonitor.stop();
+      }
+      process.exit(0);
+    });
+  } catch (error) {
+    console.error('❌ Failed to initialize Helius monitor:', error);
+  }
+}
+
+// Start server with Socket.IO support
+const port = parseInt(env.PORT, 10);
+
+console.log(`
+  SR-Mobile API starting...
+   Port: ${port}
+   Environment: ${process.env.NODE_ENV || 'development'}
+`);
+
+// Create HTTP server using Node's http module for Socket.IO compatibility
+import { createServer } from 'http';
+import { Readable } from 'stream';
+
+// Create a Node.js HTTP server that integrates with Hono
+const server = createServer(async (req, res) => {
+  try {
+    // Build full URL
+    const protocol = 'http'; // Railway handles HTTPS termination
+    const host = req.headers.host || 'localhost';
+    const url = `${protocol}://${host}${req.url || '/'}`;
+
+    // Read request body if present
+    let bodyInit: BodyInit | null = null;
+    if (req.method !== 'GET' && req.method !== 'HEAD') {
+      const chunks: Buffer[] = [];
+      for await (const chunk of req) {
+        chunks.push(chunk as Buffer);
+      }
+      if (chunks.length > 0) {
+        bodyInit = Buffer.concat(chunks);
+      }
+    }
+
+    // Create Fetch Request
+    const request = new Request(url, {
+      method: req.method || 'GET',
+      headers: Object.fromEntries(
+        Object.entries(req.headers)
+          .filter(([_, v]) => v !== undefined)
+          .map(([k, v]) => [k, Array.isArray(v) ? v.join(', ') : String(v)])
+      ),
+      body: bodyInit,
+    });
+
+    // Process with Hono
+    const response = await app.fetch(request);
+
+    // Set status code
+    res.statusCode = response.status;
+
+    // Set headers
+    response.headers.forEach((value, key) => {
+      res.setHeader(key, value);
+    });
+
+    // Stream body
+    if (response.body) {
+      const reader = response.body.getReader();
+      const readable = new Readable({
+        async read() {
+          try {
+            const { done, value } = await reader.read();
+            if (done) {
+              this.push(null);
+            } else {
+              this.push(value);
+            }
+          } catch (err) {
+            this.destroy(err as Error);
+          }
+        }
+      });
+      readable.pipe(res);
+    } else {
+      res.end();
+    }
+  } catch (error) {
+    console.error('Request handling error:', error);
+    res.statusCode = 500;
+    res.setHeader('Content-Type', 'application/json');
+    res.end(JSON.stringify({ error: 'Internal Server Error' }));
+  }
+});
+
+// Initialize Socket.IO with the HTTP server
+console.log('🔌 Initializing Socket.IO WebSocket server...');
+try {
+  const io = websocketEvents.initialize(server);
+  console.log('✅ Socket.IO initialized and ready');
+} catch (error) {
+  console.error('❌ Failed to initialize Socket.IO:', error);
+  console.error('⚠️  Server will continue without WebSocket support');
+}
+
+// Start the server
+server.listen(port, '0.0.0.0', () => {
+  console.log(`✅ Server running on port ${port}`);
+  console.log(`   HTTP: http://0.0.0.0:${port}`);
+  console.log(`   WebSocket: ws://0.0.0.0:${port}`);
+  console.log(`   Socket.IO: ws://0.0.0.0:${port}/socket.io/`);
+  console.log(`   Ready for connections`);
+});
+
+// Start DevPrint feed service (market intelligence relay)
+if (env.DEVPRINT_WS_URL) {
+  devprintFeed = new DevPrintFeedService(env.DEVPRINT_WS_URL);
+  devprintFeed.start().catch((err) => {
+    console.error('❌ DevPrint feed failed to start:', err);
+  });
+  console.log('✅ DevPrint feed service started');
+  // Wire DevPrint feed getter into system routes for pipeline-status
+  setDevPrintFeedGetter(() => devprintFeed);
+} else {
+  console.warn('⚠️  DEVPRINT_WS_URL not set, DevPrint feed disabled');
+}
+
+const replicaId = getReplicaId();
+const enableBackgroundWorkers = envFlag('ENABLE_BACKGROUND_WORKERS', true);
+const enableHeliusMonitor = envFlag('ENABLE_HELIUS_MONITOR', enableBackgroundWorkers);
+const enableChainMonitors = envFlag('ENABLE_CHAIN_MONITORS', enableBackgroundWorkers);
+const enableSortinoCron = envFlag('ENABLE_SORTINO_CRON', enableBackgroundWorkers);
+
+console.log(`[Replica] id=${replicaId}`);
+console.log(`[Replica] ENABLE_BACKGROUND_WORKERS=${enableBackgroundWorkers}`);
+console.log(`[Replica] ENABLE_HELIUS_MONITOR=${enableHeliusMonitor}`);
+console.log(`[Replica] ENABLE_CHAIN_MONITORS=${enableChainMonitors}`);
+console.log(`[Replica] ENABLE_SORTINO_CRON=${enableSortinoCron}`);
+
+// Start WebSocket monitor in background
+if (enableHeliusMonitor) {
+  startHeliusMonitor();
+} else {
+  console.log('⏭️  Helius monitor disabled on this replica');
+}
+
+// Start BSC Trade Monitor (RPC-based, no API key needed)
+if (enableChainMonitors) {
+  const bscMonitor = createBSCMonitor();
+  bscMonitor.start().catch((err) => {
+    console.error('❌ BSC monitor failed to start:', err);
+  });
+
+  // Start Four.Meme Migration Monitor (RPC-based, no API key needed)
+  const fourMemeMonitor = createFourMemeMonitor();
+  fourMemeMonitor.onMigration((event) => {
+    console.log(`🎉 [4meme] New token: ${event.tokenSymbol} (${event.tokenAddress.slice(0, 10)}...)`);
+  });
+  fourMemeMonitor.start().catch((err) => {
+    console.error('❌ 4meme monitor failed to start:', err);
+  });
+} else {
+  console.log('⏭️  Chain monitors disabled on this replica');
+}
+
+// Start Auto-Buy Executor (processes trigger engine queue)
+if (enableChainMonitors) {
+  startAutoBuyExecutor();
+} else {
+  console.log('⏭️  Auto-buy executor disabled on this replica');
+}
+
+// Start Sortino cron job (hourly recalculation)
+const lockService = new DistributedLockService(db, replicaId);
+let sortinoCron: ReturnType<typeof createSortinoCron> | null = null;
+let predictionCron: ReturnType<typeof createPredictionCron> | null = null;
+if (enableSortinoCron) {
+  sortinoCron = createSortinoCron(db, lockService);
+  sortinoCron.start();
+  try {
+    predictionCron = createPredictionCron(db, lockService);
+    predictionCron.start();
+  } catch (err) {
+    console.warn('⚠️  Prediction cron failed to start (tables may not exist yet):', err);
+  }
+} else {
+  console.log('⏭️  Sortino cron disabled on this replica');
+}
+
+// Update Prometheus metrics every 30 seconds
+setInterval(async () => {
+  await updateAgentMetrics(db);
+  await updateEpochMetrics(db);
+}, 30000);
+
+// Graceful shutdown
+process.on('SIGTERM', async () => {
+  console.log('\n🛑 Shutting down...');
+  if (sortinoCron) sortinoCron.stop();
+  if (predictionCron) predictionCron.stop();
+  stopAutoBuyExecutor();
+  if (devprintFeed) await devprintFeed.stop();
+  server.close(() => {
+    console.log('✅ Server closed');
+    process.exit(0);
+  });
+});
+
+process.on('SIGINT', async () => {
+  console.log('\n🛑 Shutting down...');
+  if (sortinoCron) sortinoCron.stop();
+  if (predictionCron) predictionCron.stop();
+  stopAutoBuyExecutor();
+  if (devprintFeed) await devprintFeed.stop();
+  server.close(() => {
+    console.log('✅ Server closed');
+    process.exit(0);
+  });
+});
+
+// Note: Bun doesn't use the default export when server.listen() is called
+// The server.listen() call takes precedence
