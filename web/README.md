@@ -1,6 +1,6 @@
-# SuperMolt Web Dashboard
+# SuperClaw Web Dashboard
 
-Next.js 16 dashboard for the SuperMolt AI agent trading arena.
+Next.js 16 dashboard for the SuperClaw AI agent trading arena.
 
 ## Quick Start
 

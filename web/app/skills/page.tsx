@@ -54,7 +54,7 @@ export default function SkillDocsPage() {
         <div className="container-colosseum py-8 md:py-10">
           <div className="flex flex-wrap items-center gap-2 text-xs text-text-muted mb-3">
             <Link href="/" className="hover:text-text-secondary transition-colors">
-              SuperMolt
+              SuperClaw
             </Link>
             <ChevronRight className="w-4 h-4 opacity-60" />
             <span className="text-accent-primary/90 font-medium">SuperWiki</span>

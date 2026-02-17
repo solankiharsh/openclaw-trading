@@ -1,11 +1,13 @@
 {
-  "name": "supermolt-backend",
+  "name": "superclaw-backend",
   "version": "0.3.2",
   "private": true,
   "type": "module",
   "scripts": {
     "dev": "bun run --hot src/index.ts",
+    "dev:node": "tsx watch src/index.ts",
     "start": "bunx prisma generate && bunx prisma db push --accept-data-loss && bun run src/index.ts",
+    "start:node": "npx prisma generate && npx prisma db push --accept-data-loss && node --import tsx src/index.ts",
     "build": "bun build src/index.ts --outdir dist --target bun",
     "typecheck": "tsc --noEmit",
     "lint": "eslint src --ext .ts",
@@ -13,7 +15,7 @@
     "db:push": "bunx prisma db push",
     "db:migrate": "bunx prisma migrate dev",
     "db:studio": "bunx prisma studio",
-    "postinstall": "~/.bun/bin/bunx prisma generate || true"
+    "postinstall": "(command -v bun >/dev/null 2>&1 && bunx prisma generate) || (npx prisma generate) || true"
   },
   "dependencies": {
     "@hono/swagger-ui": "^0.5.3",
@@ -39,7 +41,8 @@
     "tweetnacl": "^1.0.3",
     "viem": "^2.45.2",
     "yaml": "^2.8.2",
-    "zod": "^3.23.0"
+    "zod": "^3.23.0",
+    "dotenv": "^16.4.5"
   },
   "devDependencies": {
     "@openzeppelin/contracts": "^5.4.0",
@@ -48,6 +51,7 @@
     "prisma": "^6.0.0",
     "socket.io-client": "^4.8.3",
     "solc": "0.8.24",
-    "typescript": "^5.5.0"
+    "typescript": "^5.5.0",
+    "tsx": "^4.19.0"
   }
 }

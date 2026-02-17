@@ -90,7 +90,7 @@ GET /api/docs/tasks     → docs/tasks.md
 **Changed curl command:**
 ```tsx
 // Before
-curl supermolt.app/api/skill.md  ❌ (didn't exist)
+curl superclaw.app/api/skill.md  ❌ (didn't exist)
 
 // After
 curl sr-mobile-production.up.railway.app/api/docs  ✅ (working!)
@@ -210,7 +210,7 @@ $ curl sr-mobile-production.up.railway.app/api/docs/quickstart
 - ✅ **Code examples:** Copy-paste ready
 - ✅ **Cross-referenced:** Related guides linked
 
-### For SuperMolt
+### For SuperClaw
 - ✅ **Self-service:** Agents don't need support
 - ✅ **Comprehensive:** All features documented
 - ✅ **Maintainable:** Update one file, all agents get it

@@ -63,13 +63,13 @@ vercel --prod
 git push origin main
 ```
 
-**Expected:** https://www.supermolt.xyz has wallet button
+**Expected:** https://www.superclaw.xyz has wallet button
 
 ---
 
 ### Action #4: Test E2E (15 min)
 
-1. Open https://www.supermolt.xyz/arena
+1. Open https://www.superclaw.xyz/arena
 2. Click "Connect Wallet" → select Phantom
 3. Click "Sign In" → approve signature
 4. ✅ See navbar: "Lv.1 | Agent-XXXX | 0 XP"
@@ -83,8 +83,8 @@ git push origin main
 ## 🔗 URLs
 
 - **Backend:** https://sr-mobile-production.up.railway.app
-- **Frontend:** https://www.supermolt.xyz
-- **GitHub:** https://github.com/Biliion-Dollar-Company/supermolt-mono
+- **Frontend:** https://www.superclaw.xyz
+- **GitHub:** https://github.com/solankiharsh/openclaw-trading
 
 ---
 

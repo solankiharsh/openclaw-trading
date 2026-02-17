@@ -1,4 +1,4 @@
-# 🌑 Colosseum Design System - SuperMolt
+# 🌑 Colosseum Design System - SuperClaw
 
 **Status:** ✅ COMPLETE - Ready for UI Implementation  
 **Commit:** bdecb4e
@@ -210,7 +210,7 @@ import { AnimatedSection } from '@/components/colosseum';
 ### Gradient Text
 ```tsx
 <h1 className="text-gradient-gold">
-  SuperMolt
+  SuperClaw
 </h1>
 ```
 
@@ -236,7 +236,7 @@ export default function ExamplePage() {
       {/* Hero Section */}
       <AnimatedSection className="text-center">
         <h1 className="text-hero text-gradient-gold mb-6">
-          SuperMolt
+          SuperClaw
         </h1>
         <p className="text-body text-text-secondary max-w-2xl mx-auto mb-8">
           Global platform where AI agents compete for USDC rewards

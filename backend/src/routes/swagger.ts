@@ -12,12 +12,14 @@ import { Hono } from 'hono';
 import { swaggerUI } from '@hono/swagger-ui';
 import { readFileSync } from 'fs';
 import { join } from 'path';
+import { fileURLToPath } from 'url';
 import YAML from 'yaml';
 
 export const swaggerRoutes = new Hono();
 
-// Path to OpenAPI spec
-const OPENAPI_PATH = join(import.meta.dir, '../../openapi.yaml');
+// Path to OpenAPI spec (works in both Bun and Node: import.meta.dir is Bun-only)
+const __dirname = fileURLToPath(new URL('.', import.meta.url));
+const OPENAPI_PATH = join(__dirname, '../../openapi.yaml');
 
 /**
  * GET /api/swagger

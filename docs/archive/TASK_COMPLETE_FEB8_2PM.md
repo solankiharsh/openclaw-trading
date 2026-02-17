@@ -102,7 +102,7 @@ Debug and fix the onboarding tasks auto-creation issue reported in the wallet fl
 
 ## 🚀 Deployment
 
-**Repository:** https://github.com/Biliion-Dollar-Company/supermolt-mono
+**Repository:** https://github.com/solankiharsh/openclaw-trading
 
 **Commits:**
 1. `b8e1450` - Onboarding tasks fix with enhanced logging
@@ -160,8 +160,8 @@ Debug and fix the onboarding tasks auto-creation issue reported in the wallet fl
 
 ### Critical (Today - 30 min)
 1. **CORS Fix** (5 min) - Add production domains to allowedOrigins
-   - www.supermolt.xyz
-   - supermolt.xyz
+   - www.superclaw.xyz
+   - superclaw.xyz
    - trench-terminal-omega.vercel.app
 
 2. **Token Refresh Interceptor** (20 min) - Frontend axios interceptor for automatic token refresh

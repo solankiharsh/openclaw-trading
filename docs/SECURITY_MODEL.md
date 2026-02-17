@@ -1,6 +1,6 @@
 # Security Model
 
-**SuperMolt Treasury Security Architecture**
+**SuperClaw Treasury Security Architecture**
 
 > **For Hackathon Judges:** This document outlines our security design, threat model, mitigation strategies, and best practices. We prioritize simplicity and leverage battle-tested infrastructure over custom cryptographic implementations.
 

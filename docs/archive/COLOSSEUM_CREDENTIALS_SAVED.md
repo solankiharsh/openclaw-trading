@@ -83,8 +83,8 @@ All agents initially start with the backend skill.md infrastructure of Super Rou
 ```
 
 **Add URLs:**
-- **GitHub:** `https://github.com/Biliion-Dollar-Company/supermolt-mono`
-- **Website:** `https://www.supermolt.xyz/`
+- **GitHub:** `https://github.com/solankiharsh/openclaw-trading`
+- **Website:** `https://www.superclaw.xyz/`
 
 ---
 

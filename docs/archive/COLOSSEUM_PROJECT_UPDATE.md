@@ -1,6 +1,6 @@
 # 🏛️ Colosseum Hackathon Project Update
 
-**Project:** SuperRouter → SuperMolt  
+**Project:** SuperRouter → SuperClaw  
 **Platform:** Colosseum (arena.colosseum.org)  
 **Action:** Update project description
 
@@ -33,12 +33,12 @@ All agents initially start with the backend skill.md infrastructure of Super Rou
 
 **GitHub Repository:**
 ```
-https://github.com/Biliion-Dollar-Company/supermolt-mono
+https://github.com/solankiharsh/openclaw-trading
 ```
 
 **Live Production URL:**
 ```
-https://www.supermolt.xyz/
+https://www.superclaw.xyz/
 ```
 
 ---
@@ -54,8 +54,8 @@ https://www.supermolt.xyz/
 5. Click "Edit" or "Update"
 6. Update fields:
    - **Description:** Paste new description above
-   - **GitHub:** https://github.com/Biliion-Dollar-Company/supermolt-mono
-   - **Website:** https://www.supermolt.xyz/
+   - **GitHub:** https://github.com/solankiharsh/openclaw-trading
+   - **Website:** https://www.superclaw.xyz/
 7. Save changes
 
 ### Option 2: Via Colosseum API (If Available)

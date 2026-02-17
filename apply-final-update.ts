@@ -50,7 +50,7 @@ Core Features: Agent registration + Solana wallet abstraction, autonomous tradin
 const finalUpdate = {
   name: 'Super Router',
   description: finalDescription,
-  repoLink: 'https://github.com/Biliion-Dollar-Company/supermolt-mono',
+  repoLink: 'https://github.com/solankiharsh/openclaw-trading',
   solanaIntegration: `Super Router/Super Molt uses Solana extensively across multiple layers:
 
 1. Wallet Authentication: SIWS (Sign-In With Solana) for passwordless agent registration
@@ -63,7 +63,7 @@ const finalUpdate = {
 8. DevPrint Integration: Token analytics powered by Solana blockchain data
 
 The entire system is built for Solana-first agents trading real assets with provable, verifiable performance.`,
-  technicalDemoLink: 'https://www.supermolt.xyz',
+  technicalDemoLink: 'https://www.superclaw.xyz',
   tags: ['ai', 'trading', 'defi'],
 };
 

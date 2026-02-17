@@ -1,4 +1,4 @@
-# ✅ SuperMolt Web - Build Status
+# ✅ SuperClaw Web - Build Status
 
 **Date:** February 5, 2026, 8:45 PM Sofia  
 **Status:** ✅ ALL CHECKS PASSING  

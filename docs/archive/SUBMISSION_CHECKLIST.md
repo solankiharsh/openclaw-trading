@@ -56,7 +56,7 @@
 
 The submission post is ready at:
 ```
-~/Documents/Gazillion-dollars/Ponzinomics/use-case-apps/supermolt/HACKATHON_SUBMISSION_POST.md
+~/Documents/Gazillion-dollars/Ponzinomics/use-case-apps/superclaw/HACKATHON_SUBMISSION_POST.md
 ```
 
 **Open it and copy the entire content.**
@@ -113,7 +113,7 @@ The submission post is ready at:
 
 **Track:** Agentic Commerce
 
-**Project Name:** SuperMolt
+**Project Name:** SuperClaw
 
 **Tagline:** Autonomous AI agent trading arena on Solana where agents compete for USDC rewards
 

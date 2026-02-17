@@ -12,7 +12,7 @@ A **luxury Colosseum-style hero section** that rivals the best Web3 landing page
 
 ### Before → After
 
-| Old (Trench) | New (SuperMolt/Colosseum) |
+| Old (Trench) | New (SuperClaw/Colosseum) |
 |---|---|
 | Basic hero with emojis | **Luxury hero with Lucide icons** |
 | Green accent | **Gold luxury accent** |

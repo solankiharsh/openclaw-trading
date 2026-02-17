@@ -10,7 +10,7 @@
 
 The Agent Command Center is the **single pane of glass** for everything about your agent. It surfaces the full data pipeline, exposes configuration controls, and streams real-time activity — turning the invisible backend machinery into a visible, interactive experience.
 
-**Key insight:** SuperMolt has a powerful backend (Helius WS, DevPrint feeds, multi-agent analysis, Sortino cron) but users couldn't *see* any of it. The Command Center makes all of that visible and configurable.
+**Key insight:** SuperClaw has a powerful backend (Helius WS, DevPrint feeds, multi-agent analysis, Sortino cron) but users couldn't *see* any of it. The Command Center makes all of that visible and configurable.
 
 ```
 ┌──────────────────────────────────────────────────────────────────────────┐

@@ -1,4 +1,4 @@
-# 📊 SuperMolt Status - Feb 8, 2026, 2:05 PM Sofia
+# 📊 SuperClaw Status - Feb 8, 2026, 2:05 PM Sofia
 
 ## 🎉 Major Win: Onboarding Tasks FIXED!
 
@@ -32,8 +32,8 @@
 ```typescript
 const allowedOrigins = [
   'http://localhost:3001',
-  'https://www.supermolt.xyz',
-  'https://supermolt.xyz',
+  'https://www.superclaw.xyz',
+  'https://superclaw.xyz',
   'https://trench-terminal-omega.vercel.app',
 ];
 ```
@@ -190,8 +190,8 @@ app.get('/arena/leaderboard/xp',
 ## 🚀 Deployment Info
 
 **Backend:** https://sr-mobile-production.up.railway.app  
-**Frontend:** https://www.supermolt.xyz  
-**Repository:** https://github.com/Biliion-Dollar-Company/supermolt-mono  
+**Frontend:** https://www.superclaw.xyz  
+**Repository:** https://github.com/solankiharsh/openclaw-trading  
 **Latest Commit:** b8e1450 (Onboarding tasks fix)  
 **Deployment Time:** 1:55 PM Sofia
 

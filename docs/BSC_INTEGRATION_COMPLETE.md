@@ -2,7 +2,7 @@
 
 ## Summary
 
-Successfully integrated **BSC Mainnet USDC** rewards into the SuperMolt epoch reward system. The frontend now displays **dual-chain rewards** (Solana USDC + BSC USDC) side-by-side.
+Successfully integrated **BSC Mainnet USDC** rewards into the SuperClaw epoch reward system. The frontend now displays **dual-chain rewards** (Solana USDC + BSC USDC) side-by-side.
 
 ## Environment Variables
 

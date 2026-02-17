@@ -1,4 +1,13 @@
 import { z } from 'zod';
+import path from 'path';
+import { fileURLToPath } from 'url';
+import dotenv from 'dotenv';
+
+// Load .env and .env.local from backend root (so backend/.env.local is used when you have vars there)
+const __dirname = fileURLToPath(new URL('.', import.meta.url));
+const backendRoot = path.join(__dirname, '..', '..');
+dotenv.config({ path: path.join(backendRoot, '.env') });
+dotenv.config({ path: path.join(backendRoot, '.env.local'), override: true });
 
 const envSchema = z.object({
   PORT: z.string().default('3001'),
