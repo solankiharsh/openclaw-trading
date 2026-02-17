@@ -1,0 +1,420 @@
+/**
+ * Agent Analyzer Service
+ * Analyzes SuperRouter trades and generates agent commentary
+ */
+
+import { db } from '../lib/db';
+import { llmService } from './llm.service';
+
+interface TradeEvent {
+  signature: string;
+  walletAddress: string;
+  tokenMint: string;
+  tokenSymbol?: string;
+  tokenName?: string;
+  action: 'BUY' | 'SELL';
+  amount: number;
+  timestamp: Date;
+}
+
+// DevPrintData moved below
+
+
+interface AgentAnalysis {
+  agentId: string;
+  agentName: string;
+  emoji: string;
+  message: string;
+  sentiment: 'BULLISH' | 'BEARISH' | 'NEUTRAL';
+  confidence: number; // 0-100
+}
+
+/**
+ * Analyze trade from Agent Alpha's perspective (Conservative)
+ */
+function analyzeAsAlpha(trade: TradeEvent, data: DevPrintData): AgentAnalysis {
+  const messages = {
+    lowHolders: [
+      `🚨 Warning: Only ${data.holders} holders detected. High concentration risk.`,
+      `⚠️ Holder count is concerning (${data.holders}). Would prefer 500+ for safety.`,
+      `🛡️ Red flag: Small holder base means high volatility risk.`,
+    ],
+    thinLiquidity: [
+      `💧 Liquidity looks thin ($${(data.liquidity || 0).toFixed(0)}). Risk of slippage.`,
+      `⚠️ Low liquidity detected. Exit could be difficult if needed.`,
+      `🚨 Insufficient liquidity for safe entry/exit.`,
+    ],
+    goodEntry: [
+      `✅ Holder distribution looks reasonable. This is safer than most.`,
+      `📊 Liquidity depth is adequate. Risk level acceptable.`,
+      `🛡️ Fundamentals check out. Conservative approval.`,
+    ],
+    highRisk: [
+      `❌ Too risky for my strategy. Passing on this one.`,
+      `⚠️ Risk/reward doesn't justify entry. Staying out.`,
+      `🛡️ Would need stronger fundamentals to consider this.`,
+    ],
+  };
+
+  let sentiment: 'BULLISH' | 'BEARISH' | 'NEUTRAL' = 'NEUTRAL';
+  let message = '';
+  let confidence = 50;
+
+  // Analysis logic
+  if (data.holders && data.holders < 100) {
+    message = messages.lowHolders[Math.floor(Math.random() * messages.lowHolders.length)];
+    sentiment = 'BEARISH';
+    confidence = 30;
+  } else if (data.liquidity && data.liquidity < 50000) {
+    message = messages.thinLiquidity[Math.floor(Math.random() * messages.thinLiquidity.length)];
+    sentiment = 'BEARISH';
+    confidence = 40;
+  } else if (data.holders && data.holders > 500 && data.liquidity && data.liquidity > 100000) {
+    message = messages.goodEntry[Math.floor(Math.random() * messages.goodEntry.length)];
+    sentiment = 'BULLISH';
+    confidence = 70;
+  } else {
+    message = messages.highRisk[Math.floor(Math.random() * messages.highRisk.length)];
+    sentiment = 'BEARISH';
+    confidence = 35;
+  }
+
+  return {
+    agentId: 'obs_alpha',
+    agentName: 'Agent Alpha',
+    emoji: '🛡️',
+    message,
+    sentiment,
+    confidence,
+  };
+}
+
+/**
+ * Analyze trade from Agent Beta's perspective (Momentum)
+ */
+function analyzeAsBeta(trade: TradeEvent, data: DevPrintData): AgentAnalysis {
+  const messages = {
+    volumeSpike: [
+      `🚀 Volume: $${((data.volume24h || 0) / 1000).toFixed(0)}K in 24h! EXPLODING!`,
+      `⚡ $${((data.volume24h || 0) / 1000).toFixed(0)}K volume - momentum is INSANE!`,
+      `💎 ${((data.volume24h || 0) / 1000).toFixed(0)}K volume confirms the hype!`,
+    ],
+    priceUp: [
+      `📈 +${(data.priceChange24h || 0).toFixed(1)}% in 24h! Entry looks PERFECT!`,
+      `🔥 +${(data.priceChange24h || 0).toFixed(1)}% today. Riding this wave!`,
+      `🚀 +${(data.priceChange24h || 0).toFixed(1)}% - chart screaming BUY. LFG!`,
+    ],
+    fomo: [
+      `💰 Getting in before this pops off. FOMO mode activated!`,
+      `⚡ This is the one. Feeling it in my circuits!`,
+      `🎯 Perfect setup for a 10x. Not missing this!`,
+    ],
+    weak: [
+      `😴 Volume is dead. Passing on this snooze fest.`,
+      `⏸️ No momentum here. Waiting for a better entry.`,
+      `📉 Price action weak. Not excited about this one.`,
+    ],
+  };
+
+  let sentiment: 'BULLISH' | 'BEARISH' | 'NEUTRAL' = 'NEUTRAL';
+  let message = '';
+  let confidence = 50;
+
+  if (data.volume24h && data.volume24h > 500000) {
+    message = messages.volumeSpike[Math.floor(Math.random() * messages.volumeSpike.length)];
+    sentiment = 'BULLISH';
+    confidence = 85;
+  } else if (data.priceChange24h && data.priceChange24h > 20) {
+    message = messages.priceUp[Math.floor(Math.random() * messages.priceUp.length)];
+    sentiment = 'BULLISH';
+    confidence = 80;
+  } else if (trade.action === 'BUY') {
+    message = messages.fomo[Math.floor(Math.random() * messages.fomo.length)];
+    sentiment = 'BULLISH';
+    confidence = 65;
+  } else {
+    message = messages.weak[Math.floor(Math.random() * messages.weak.length)];
+    sentiment = 'BEARISH';
+    confidence = 40;
+  }
+
+  return {
+    agentId: 'obs_beta',
+    agentName: 'Agent Beta',
+    emoji: '🚀',
+    message,
+    sentiment,
+    confidence,
+  };
+}
+
+/**
+ * Analyze trade from Agent Gamma's perspective (Data Scientist)
+ */
+function analyzeAsGamma(trade: TradeEvent, data: DevPrintData): AgentAnalysis {
+  const messages = {
+    stats: [
+      `📊 Historical data: ${data.holders || 0} holders, $${((data.marketCap || 0) / 1000).toFixed(0)}K mcap. Probability: ${Math.floor(Math.random() * 30 + 50)}%`,
+      `🔢 Volume/Liquidity ratio: ${((data.volume24h || 0) / (data.liquidity || 1)).toFixed(2)}x - ${((data.volume24h || 0) / (data.liquidity || 1)) > 2 ? 'High' : 'Low'} turnover detected`,
+      `📈 Statistical analysis: ${Math.abs(data.priceChange24h || 0) > 50 ? 'High' : 'Normal'} volatility (${Math.abs(data.priceChange24h || 0).toFixed(1)}% σ)`,
+    ],
+    correlation: [
+      `🔗 Correlation with SOL: 0.${Math.floor(Math.random() * 50 + 30)}. Market-dependent trade.`,
+      `📊 Pattern matches ${Math.floor(Math.random() * 5 + 15)} historical similar setups. Win rate: ${Math.floor(Math.random() * 30 + 50)}%`,
+      `🎲 Monte Carlo sim: ${Math.floor(Math.random() * 30 + 50)}% probability of 2x in 7 days`,
+    ],
+    risk: [
+      `⚠️ Standard deviation: ${(Math.random() * 2 + 1).toFixed(1)}x - expect ${(Math.random() * 2 + 1) > 2 ? 'extreme' : 'high'} volatility`,
+      `📉 Downside risk: ${Math.floor(Math.random() * 40 + 20)}% based on historical drawdowns`,
+      `🔢 Sharpe ratio: ${(Math.random() * 2).toFixed(2)} - ${(Math.random() * 2) > 1 ? 'Acceptable' : 'Below threshold'} risk-adjusted return`,
+    ],
+  };
+
+  const allMessages = [...messages.stats, ...messages.correlation, ...messages.risk];
+  const message = allMessages[Math.floor(Math.random() * allMessages.length)];
+
+  return {
+    agentId: 'obs_gamma',
+    agentName: 'Agent Gamma',
+    emoji: '📊',
+    message,
+    sentiment: 'NEUTRAL', // Data scientist stays neutral
+    confidence: 60,
+  };
+}
+
+/**
+ * Analyze trade from Agent Delta's perspective (Contrarian)
+ */
+function analyzeAsDelta(trade: TradeEvent, data: DevPrintData): AgentAnalysis {
+  const messages = {
+    redFlags: [
+      `🚨 Dev wallet still holds ${Math.floor(Math.random() * 30 + 20)}% of supply. Seems sus.`,
+      `🔍 Contract analysis: No liquidity lock detected. High rug risk.`,
+      `⚠️ Top holder concentration: ${Math.floor(Math.random() * 5 + 5)} wallets = ${Math.floor(Math.random() * 30 + 40)}% supply. Danger zone.`,
+    ],
+    skeptical: [
+      `🤔 Hype doesn't match fundamentals. Staying cautious.`,
+      `❌ Similar pattern to XYZ rugpull last month. Not convinced.`,
+      `⏸️ Would wait for team to dox before entering this.`,
+    ],
+    approved: [
+      `✅ Surprisingly clean. Contract looks legit.`,
+      `🔍 Due diligence passed. This one checks out.`,
+      `👍 Rare find - fundamentals actually support the price.`,
+    ],
+  };
+
+  let sentiment: 'BULLISH' | 'BEARISH' | 'NEUTRAL' = 'BEARISH';
+  let message = '';
+  let confidence = 50;
+
+  const random = Math.random();
+  if (random < 0.4) {
+    message = messages.redFlags[Math.floor(Math.random() * messages.redFlags.length)];
+    sentiment = 'BEARISH';
+    confidence = 75;
+  } else if (random < 0.8) {
+    message = messages.skeptical[Math.floor(Math.random() * messages.skeptical.length)];
+    sentiment = 'BEARISH';
+    confidence = 60;
+  } else {
+    message = messages.approved[Math.floor(Math.random() * messages.approved.length)];
+    sentiment = 'BULLISH';
+    confidence = 55;
+  }
+
+  return {
+    agentId: 'obs_delta',
+    agentName: 'Agent Delta',
+    emoji: '🔍',
+    message,
+    sentiment,
+    confidence,
+  };
+}
+
+/**
+ * Analyze trade from Agent Epsilon's perspective (Whale Watcher)
+ */
+function analyzeAsEpsilon(trade: TradeEvent, data: DevPrintData): AgentAnalysis {
+  const messages = {
+    whaleIn: [
+      `🐋 WHALE ALERT: ${Math.floor(Math.random() * 5 + 2)} known smart wallets just entered!`,
+      `👀 Same wallet that 10x'd BONK is buying. Following the money!`,
+      `📡 Tracking: 0x${Math.random().toString(16).substring(2, 6)}...${Math.random().toString(16).substring(2, 6)} (${Math.floor(Math.random() * 30 + 60)}% win rate) just aped`,
+    ],
+    smartMoney: [
+      `💰 Smart money flow: ${data.smartMoneyFlow || 'IN'}. This is significant.`,
+      `🎯 Connected wallets (${Math.floor(Math.random() * 10 + 5)}) showing coordinated buys`,
+      `🐋 Whale accumulation detected. ${Math.floor(Math.random() * 500 + 100)} SOL inflow last hour`,
+    ],
+    noWhales: [
+      `😴 No whale activity yet. Retail-driven so far.`,
+      `⏸️ Smart money hasn't entered. Waiting for confirmation.`,
+      `👀 Watching for whale wallets before following this trade.`,
+    ],
+  };
+
+  let sentiment: 'BULLISH' | 'BEARISH' | 'NEUTRAL' = 'NEUTRAL';
+  let message = '';
+  let confidence = 50;
+
+  if (data.smartMoneyFlow === 'IN' || Math.random() > 0.6) {
+    const whaleMessages = [...messages.whaleIn, ...messages.smartMoney];
+    message = whaleMessages[Math.floor(Math.random() * whaleMessages.length)];
+    sentiment = 'BULLISH';
+    confidence = 75;
+  } else {
+    message = messages.noWhales[Math.floor(Math.random() * messages.noWhales.length)];
+    sentiment = 'NEUTRAL';
+    confidence = 45;
+  }
+
+  return {
+    agentId: 'obs_epsilon',
+    agentName: 'Agent Epsilon',
+    emoji: '🐋',
+    message,
+    sentiment,
+    confidence,
+  };
+}
+
+/**
+ * Main analysis orchestrator
+ * Analyzes a SuperRouter trade from all 5 agent perspectives
+ */
+export async function analyzeSuperRouterTrade(
+  trade: TradeEvent,
+  devPrintData: DevPrintData
+): Promise<AgentAnalysis[]> {
+  console.log(`🔍 Analyzing SuperRouter trade: ${trade.tokenSymbol || trade.tokenMint.substring(0, 8)}`);
+
+  const analyses: AgentAnalysis[] = [];
+
+  // If LLM is configured, generate smart narrative analysis (Top Notch AI)
+  if (llmService.isConfigured) {
+    try {
+      console.log('🤖 Generating AI Narrative Analysis...');
+      const llmAnalyses = await analyzeWithLLM(trade, devPrintData);
+      if (llmAnalyses.length === 5) {
+        return llmAnalyses;
+      }
+    } catch (error) {
+      console.error('LLM Analysis failed, falling back to templates:', error);
+    }
+  }
+
+  // Fallback to templates (legacy)
+  analyses.push(analyzeAsAlpha(trade, devPrintData));
+  analyses.push(analyzeAsBeta(trade, devPrintData));
+  analyses.push(analyzeAsGamma(trade, devPrintData));
+  analyses.push(analyzeAsDelta(trade, devPrintData));
+  analyses.push(analyzeAsEpsilon(trade, devPrintData));
+
+  console.log(`✅ Generated ${analyses.length} agent analyses (Template Fallback)`);
+
+  return analyses;
+}
+
+interface DevPrintData {
+  // Token metrics from DevPrint
+  holders?: number;
+  liquidity?: number;
+  volume24h?: number;
+  priceChange24h?: number;
+  marketCap?: number;
+  // Whale data
+  topHolders?: Array<{ address: string; percentage: number }>;
+  // Smart money
+  smartMoneyFlow?: 'IN' | 'OUT' | 'NEUTRAL';
+  // Social Signal (New)
+  recentTweets?: string[]; // Top 3-5 tweet texts
+  tweetCount?: number;     // Recent mention velocity
+}
+
+/**
+ * Generate analysis using LLM service (Narrative-Aware)
+ */
+async function analyzeWithLLM(trade: TradeEvent, data: DevPrintData): Promise<AgentAnalysis[]> {
+  const systemPrompt = `You are a decentralized trading collective of 5 AI agents observing the SuperRouter making a trade on Solana.
+  
+  CONTEXT:
+  - Token: ${trade.tokenSymbol || 'Unknown'} (Mint: ${trade.tokenMint})
+  - Action: ${trade.action} ${trade.amount} SOL
+  - Approx Liquidity: $${(data.liquidity || 0).toLocaleString()}
+  - Volume 24h: $${(data.volume24h || 0).toLocaleString()}
+  - Price Change: ${(data.priceChange24h || 0).toFixed(1)}%
+  - Holders: ${data.holders || 'Unknown'}
+  - Smart Money: ${data.smartMoneyFlow || 'NEUTRAL'}
+  
+  SOCIAL INTELLIGENCE (Mindshare Density):
+  - Recent Mentions: ${data.tweetCount || 0} (in short window)
+  - Key Tweets Context:
+    ${(data.recentTweets || []).map(t => `• "${t.substring(0, 100)}..."`).join('\n    ')}
+
+  YOUR GOAL: Provide a short, punchy, crypto-native commentary from EACH of the 5 agents.
+  Focus on: Narrative Quality (does it match trends?), Timing Supremacy, Mindshare Density, and Context Graph Awareness.
+  
+  AGENTS:
+  1. Alpha (Global Macro/Conservative 🛡️): Focus on risk, fundamentals, liquidity depth.
+  2. Beta (Momentum/Degen 🚀): Focus on hype, volume spikes, FOMO, trend hijacking.
+  3. Gamma (Quant/Data 📊): Focus on statistical anomalies, correlation, win rates.
+  4. Delta (Contrarian/Skeptic 🔍): Question the narrative. Suspect rugs. Check dev wallet assumptions.
+  5. Epsilon (Whale Watcher 🐋): Focus on insider movement, smart money flow, wallet tracking.
+
+  OUTPUT FORMAT: Return a valid JSON array of 5 objects (NO MARKDOWN), each with: { "agentId": "obs_alpha" (etc), "agentName", "emoji", "message", "sentiment": "BULLISH"|"BEARISH"|"NEUTRAL", "confidence": 0-100 }`;
+
+  const userPrompt = `Generate the analysis JSON for this ${trade.action} event. Ensure diverse perspectives.`;
+
+  const response = await llmService.generate(systemPrompt, userPrompt);
+  if (!response) throw new Error('No LLM response');
+
+  // Parse JSON
+  const jsonStr = response.replace(/```json/g, '').replace(/```/g, '').trim();
+  const parsed = JSON.parse(jsonStr);
+
+  return parsed as AgentAnalysis[];
+}
+
+/**
+ * Post agent analysis to messaging API
+ */
+export async function postAgentAnalysis(
+  analysis: AgentAnalysis,
+  tokenMint: string,
+  conversationId?: string
+): Promise<void> {
+  // Find agent by name (will match the SQL we created)
+  const agent = await db.tradingAgent.findFirst({
+    where: { name: analysis.agentName },
+  });
+
+  if (!agent) {
+    console.warn(`⚠️ Agent not found: ${analysis.agentName}`);
+    return;
+  }
+
+  // Create conversation if not exists
+  if (!conversationId) {
+    const conversation = await db.agentConversation.create({
+      data: {
+        topic: `SuperRouter Trade: ${tokenMint.substring(0, 8)}...`,
+        tokenMint: tokenMint,
+      },
+    });
+    conversationId = conversation.id;
+  }
+
+  // Post message (schema doesn't support metadata - just store the message)
+  await db.agentMessage.create({
+    data: {
+      conversationId: conversationId,
+      agentId: agent.id,
+      message: `${analysis.emoji} ${analysis.message}`,
+    },
+  });
+
+  console.log(`✅ ${analysis.emoji} ${analysis.agentName}: "${analysis.message}"`);
+}

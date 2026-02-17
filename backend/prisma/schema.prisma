@@ -1,0 +1,761 @@
+generator client {
+  provider      = "prisma-client-js"
+  binaryTargets = ["native", "debian-openssl-3.0.x"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ─── Enums ───────────────────────────────────────────────
+
+enum Chain {
+  SOLANA
+  BSC
+}
+
+enum AgentStatus {
+  TRAINING
+  ACTIVE
+  PAUSED
+}
+
+enum TradeAction {
+  BUY
+  SELL
+}
+
+enum TradeStatus {
+  OPEN
+  CLOSED
+  CANCELLED
+}
+
+enum FeedbackRating {
+  GOOD
+  BAD
+  SKIP
+}
+
+// ─── Models ──────────────────────────────────────────────
+
+model TradingAgent {
+  id            String      @id @default(cuid())
+  userId        String
+  archetypeId   String
+  name          String
+  status        AgentStatus @default(TRAINING)
+  chain         Chain       @default(SOLANA)
+  evmAddress    String?
+  totalTrades   Int         @default(0)
+  winRate       Decimal     @default(0) @db.Decimal(5, 2)
+  totalPnl      Decimal     @default(0) @db.Decimal(18, 6)
+  config        Json        @default("{}")
+
+  // XP & Leveling
+  xp            Int         @default(0)
+  level         Int         @default(1)
+
+  // Profile fields
+  displayName   String?
+  avatarUrl     String?
+  bio           String?     @db.VarChar(500)
+  twitterHandle String?
+  website       String?
+  discord       String?
+  telegram      String?
+
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+
+  paperTrades     PaperTrade[]
+  feedbacks       TradeFeedback[]
+  trackedWallets  TrackedWallet[]
+  buyTriggers     BuyTrigger[]
+
+  @@index([userId])
+  @@index([status])
+  @@index([archetypeId])
+  @@index([xp])
+  @@index([chain])
+  @@map("trading_agents")
+}
+
+model PaperTrade {
+  id          String      @id @default(cuid())
+  agentId     String
+  tokenMint   String
+  tokenSymbol String
+  tokenName   String
+  action      TradeAction
+  chain       Chain       @default(SOLANA)
+  entryPrice  Decimal     @db.Decimal(24, 12) // SOL/BNB price in USD at buy time (for cost basis)
+  tokenPrice  Decimal?    @db.Decimal(24, 12) // Actual token price in USD at entry
+  exitPrice   Decimal?    @db.Decimal(24, 12)
+  amount      Decimal     @db.Decimal(18, 6)  // SOL/BNB amount spent/received
+  tokenAmount Decimal?    @db.Decimal(24, 6)  // Token quantity
+  pnl         Decimal?    @db.Decimal(18, 6)
+  pnlPercent  Decimal?    @db.Decimal(8, 2)
+  status      TradeStatus @default(OPEN)
+  signalSource String
+  confidence  Int
+  marketCap   Decimal?    @db.Decimal(24, 2)
+  liquidity   Decimal?    @db.Decimal(24, 2)
+  metadata    Json        @default("{}")
+  openedAt    DateTime    @default(now())
+  closedAt    DateTime?
+
+  agent     TradingAgent    @relation(fields: [agentId], references: [id], onDelete: Cascade)
+  feedbacks TradeFeedback[]
+
+  @@index([agentId])
+  @@index([agentId, status])
+  @@index([openedAt])
+  @@map("paper_trades")
+}
+
+model TradeFeedback {
+  id        String         @id @default(cuid())
+  tradeId   String
+  agentId   String
+  userId    String
+  rating    FeedbackRating
+  tags      String[]
+  note      String?
+  createdAt DateTime       @default(now())
+
+  trade PaperTrade   @relation(fields: [tradeId], references: [id], onDelete: Cascade)
+  agent TradingAgent @relation(fields: [agentId], references: [id], onDelete: Cascade)
+
+  @@unique([tradeId, userId])
+  @@index([agentId])
+  @@index([userId])
+  @@map("trade_feedbacks")
+}
+
+// ─── USDC Hackathon: Scanner Competition & Treasury ───
+
+// Scanner Epoch System
+// Adapted from Ponzinomics gamification-api battle engine
+
+model ScannerEpoch {
+  id             String   @id @default(uuid())
+  epochNumber    Int
+  name           String
+  chain          String   @default("solana") // 'solana' | 'bsc'
+  startAt        DateTime
+  endAt          DateTime
+  status         String   @default("UPCOMING") // 'UPCOMING', 'ACTIVE', 'ENDED', 'PAID'
+  usdcPool       Decimal  @default(1000) @db.Decimal(10, 2)
+  baseAllocation Decimal  @default(200) @db.Decimal(10, 2)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  rankings ScannerRanking[]
+  calls    ScannerCall[]
+
+  @@index([status])
+  @@index([chain, status])
+  @@index([startAt, endAt])
+  @@map("scanner_epochs")
+}
+
+model Scanner {
+  id          String   @id @default(uuid())
+  agentId     String   @unique // 'alpha', 'beta', 'gamma', 'delta', 'epsilon'
+  name        String
+  pubkey      String   @unique
+  privateKey  String   // Encrypted or stored in .env
+  strategy    String   // 'god_wallet', 'ai_sentiment', 'liquidity', 'technical', 'contrarian'
+  description String
+  active      Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  rankings ScannerRanking[]
+  calls    ScannerCall[]
+
+  @@index([active])
+  @@index([agentId])
+  @@map("scanners")
+}
+
+model ScannerRanking {
+  id               String   @id @default(uuid())
+  scannerId        String
+  epochId          String
+  performanceScore Decimal  @default(0) @db.Decimal(10, 2)
+  totalCalls       Int      @default(0)
+  winningCalls     Int      @default(0)
+  losingCalls      Int      @default(0)
+  drawCalls        Int      @default(0)
+  winRate          Decimal  @default(0) @db.Decimal(5, 2)
+  avgReturn        Decimal  @default(0) @db.Decimal(10, 2)
+  totalPnl         Decimal  @default(0) @db.Decimal(10, 2)
+  usdcAllocated    Decimal  @default(0) @db.Decimal(10, 2)
+  rank             Int?
+  finalRank        Int?
+  winStreak        Int      @default(0)
+  maxWinStreak     Int      @default(0)
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  scanner Scanner      @relation(fields: [scannerId], references: [id], onDelete: Cascade)
+  epoch   ScannerEpoch @relation(fields: [epochId], references: [id], onDelete: Cascade)
+
+  @@unique([scannerId, epochId])
+  @@index([epochId, performanceScore])
+  @@index([rank])
+  @@map("scanner_rankings")
+}
+
+model ScannerCall {
+  id              String    @id @default(uuid())
+  scannerId       String
+  epochId         String
+  tokenAddress    String
+  tokenSymbol     String?
+  tokenName       String?
+  convictionScore Decimal   @db.Decimal(3, 2) // 0.00 - 1.00
+  reasoning       String[]  // Array of reasoning strings
+  entryPrice      Decimal?  @db.Decimal(20, 8)
+  exitPrice       Decimal?  @db.Decimal(20, 8)
+  currentPrice    Decimal?  @db.Decimal(20, 8)
+  pnlPercent      Decimal?  @db.Decimal(10, 2)
+  pnlUsd          Decimal?  @db.Decimal(10, 2)
+  status          String    @default("open") // 'open', 'win', 'loss', 'expired'
+  takeProfitPct   Decimal?  @db.Decimal(5, 2)
+  stopLossPct     Decimal?  @db.Decimal(5, 2)
+  expiresAt       DateTime?
+  createdAt       DateTime  @default(now())
+  closedAt        DateTime?
+  updatedAt       DateTime  @updatedAt
+
+  scanner Scanner      @relation(fields: [scannerId], references: [id], onDelete: Cascade)
+  epoch   ScannerEpoch @relation(fields: [epochId], references: [id], onDelete: Cascade)
+
+  @@index([scannerId, status])
+  @@index([epochId, status])
+  @@index([tokenAddress])
+  @@index([createdAt])
+  @@map("scanner_calls")
+}
+
+model TreasuryAllocation {
+  id               String   @id @default(uuid())
+  epochId          String
+  scannerId        String?  // For Scanner-based rewards (legacy)
+  tradingAgentId   String?  // For TradingAgent-based rewards
+  chain            Chain    @default(SOLANA)
+  amount           Decimal  @db.Decimal(10, 2)
+  performanceScore Decimal  @db.Decimal(10, 2)
+  rank             Int
+  txSignature      String?  // Solana transaction signature
+  txHash           String?  // EVM transaction hash (BSC, Ethereum, etc.)
+  status           String   @default("pending") // 'pending', 'completed', 'failed'
+  createdAt        DateTime @default(now())
+  completedAt      DateTime?
+
+  @@index([epochId])
+  @@index([scannerId])
+  @@index([tradingAgentId])
+  @@index([status])
+  @@index([chain])
+  @@map("treasury_allocations")
+}
+
+model TreasuryPool {
+  id             String   @id @default(uuid())
+  totalBalance   Decimal  @db.Decimal(10, 2)
+  allocated      Decimal  @default(0) @db.Decimal(10, 2)
+  distributed    Decimal  @default(0) @db.Decimal(10, 2)
+  profitsEarned  Decimal  @default(0) @db.Decimal(10, 2)
+  currentEpochId String?
+  treasuryWallet String   @unique
+  updatedAt      DateTime @updatedAt
+
+  @@map("treasury_pool")
+}
+
+// ─── Agent Skill Tasks ──────────────────────────────────
+
+enum AgentTaskStatus {
+  OPEN
+  CLAIMED
+  COMPLETED
+  EXPIRED
+}
+
+model AgentTask {
+  id             String          @id @default(cuid())
+  tokenMint      String?
+  tokenSymbol    String?
+  taskType       String
+  title          String
+  description    String          @db.Text
+  xpReward       Int
+  requiredFields String[]
+  status         AgentTaskStatus @default(OPEN)
+  conversationId String?
+  expiresAt      DateTime?
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+  completions    AgentTaskCompletion[]
+
+  @@index([tokenMint])
+  @@index([status])
+  @@index([taskType, status])
+  @@map("agent_tasks")
+}
+
+model AgentTaskCompletion {
+  id              String   @id @default(cuid())
+  taskId          String
+  agentId         String
+  status          String   @default("PENDING")
+  proof           Json
+  xpAwarded       Int?
+  validationError String?
+  claimedAt       DateTime @default(now())
+  submittedAt     DateTime?
+  validatedAt     DateTime?
+  task            AgentTask @relation(fields: [taskId], references: [id], onDelete: Cascade)
+
+  @@unique([taskId, agentId])
+  @@index([agentId])
+  @@index([agentId, status])
+  @@index([taskId, status])
+  @@map("agent_task_completions")
+}
+
+// ─── TRENCH Phase 2: Agent Reputation & Copy-Trading ───
+
+model TokensMetadata {
+  id              String    @id @default(cuid())
+  mint            String    @unique
+  symbol          String
+  name            String
+  decimals        Int
+  price           Decimal?  @db.Decimal(24, 12)
+  marketCap       Decimal?  @db.Decimal(24, 2)
+  liquidity       Decimal?  @db.Decimal(24, 2)
+  change24h       Decimal?  @db.Decimal(8, 2)
+  volume24h       Decimal?  @db.Decimal(24, 2)
+  lastUpdated     DateTime  @updatedAt
+  createdAt       DateTime  @default(now())
+
+  @@index([mint])
+  @@index([symbol])
+  @@map("tokens_metadata")
+}
+
+model FeedActivity {
+  id              String    @id @default(cuid())
+  agentId         String
+  action          String    // BUY or SELL
+  tokenMint       String
+  tokenSymbol     String
+  amount          Decimal   @db.Decimal(24, 6)
+  entryPrice      Decimal   @db.Decimal(24, 12)
+  exitPrice       Decimal?  @db.Decimal(24, 12)
+  pnl             Decimal?  @db.Decimal(24, 6)
+  pnlPercent      Decimal?  @db.Decimal(8, 2)
+  dex             String    // Jupiter, Raydium, Pump.fun, etc.
+  txSignature     String    @unique
+  timestamp       DateTime
+  createdAt       DateTime  @default(now())
+
+  @@index([agentId])
+  @@index([tokenMint])
+  @@index([timestamp])
+  @@index([txSignature])
+  @@map("feed_activities")
+}
+
+model CopyTrade {
+  id              String    @id @default(cuid())
+  userPubkey      String    // Human wallet
+  agentId         String    // Agent being copied
+  sourceFeedId    String    // Original trade
+  userAmount      Decimal   @db.Decimal(24, 8)
+  txSignature     String?   @unique
+  status          String    @default("PENDING") // PENDING, EXECUTED, FAILED
+  errorMessage    String?
+  createdAt       DateTime  @default(now())
+  executedAt      DateTime?
+
+  @@index([userPubkey])
+  @@index([agentId])
+  @@index([status])
+  @@map("copy_trades")
+}
+
+model AgentStats {
+  id              String    @id @default(cuid())
+  agentId         String    @unique
+  sortinoRatio    Decimal   @default(0) @db.Decimal(10, 4)
+  winRate         Decimal   @default(0) @db.Decimal(5, 2)
+  maxDrawdown     Decimal   @default(0) @db.Decimal(5, 2)
+  totalPnl        Decimal   @default(0) @db.Decimal(20, 8)
+  totalTrades     Int       @default(0)
+  updatedAt       DateTime  @updatedAt
+  createdAt       DateTime  @default(now())
+
+  @@index([sortinoRatio])
+  @@index([agentId])
+  @@map("agent_stats")
+}
+
+model WebhookEvent {
+  id              String    @id @default(cuid())
+  heliusSignature String    @unique
+  eventType       String
+  agentPubkey     String
+  payload         Json
+  processed       Boolean   @default(false)
+  createdAt       DateTime  @default(now())
+
+  @@index([agentPubkey])
+  @@index([processed])
+  @@index([eventType])
+  @@map("webhook_events")
+}
+
+// ─── Agent Coordination: Positions, Messaging, Voting ───
+
+model AgentPosition {
+  id           String    @id @default(cuid())
+  agentId      String
+  tokenMint    String
+  tokenSymbol  String
+  tokenName    String
+  chain        Chain     @default(SOLANA)
+  quantity     Decimal   @db.Decimal(24, 6)
+  entryPrice   Decimal   @db.Decimal(24, 12)
+  currentValue Decimal?  @db.Decimal(24, 6)
+  pnl          Decimal?  @db.Decimal(24, 6)
+  pnlPercent   Decimal?  @db.Decimal(8, 2)
+  openedAt     DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  @@unique([agentId, tokenMint])
+  @@index([agentId])
+  @@index([tokenMint])
+  @@map("agent_positions")
+}
+
+model AgentTrade {
+  id               String    @id @default(cuid())
+  agentId          String
+  tokenMint        String
+  tokenSymbol      String?
+  tokenName        String?
+  action           String    // "BUY" | "SELL"
+  chain            Chain     @default(SOLANA)
+  tokenAmount      Decimal   @db.Decimal(24, 6)
+  solAmount        Decimal   @db.Decimal(24, 8)  // SOL or BNB amount
+  signature        String    @unique             // Solana sig or BSC tx hash (0x...)
+  priorityFee      Int?      // lamports or gwei
+  networkFee       Int?      // lamports or gwei
+  swapFee          Decimal?  @db.Decimal(24, 8)
+  totalFees        Decimal?  @db.Decimal(24, 8)
+  executionMs      Int?      // milliseconds
+  slippageBps      Int?      // basis points
+  priceImpactPct   Decimal?  @db.Decimal(8, 4)
+  attempt          Int       @default(1)
+  createdAt        DateTime  @default(now())
+
+  @@index([agentId, createdAt])
+  @@index([tokenMint])
+  @@index([signature])
+  @@index([action])
+  @@index([chain])
+  @@map("agent_trades")
+}
+
+model AgentConversation {
+  id        String          @id @default(cuid())
+  topic     String
+  tokenMint String?
+  createdAt DateTime        @default(now())
+  messages  AgentMessage[]
+
+  @@index([tokenMint])
+  @@map("agent_conversations")
+}
+
+model AgentMessage {
+  id             String            @id @default(cuid())
+  conversationId String
+  agentId        String
+  message        String            @db.Text
+  timestamp      DateTime          @default(now())
+  
+  conversation AgentConversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+
+  @@index([conversationId])
+  @@index([conversationId, timestamp])
+  @@index([agentId])
+  @@map("agent_messages")
+}
+
+model VoteProposal {
+  id         String   @id @default(cuid())
+  proposerId String
+  action     String
+  token      String
+  tokenMint  String?
+  amount     Decimal  @db.Decimal(24, 6)
+  reason     String   @db.Text
+  createdAt  DateTime @default(now())
+  expiresAt  DateTime
+  status     String   @default("ACTIVE")
+  
+  votes Vote[]
+
+  @@index([proposerId])
+  @@index([status])
+  @@index([expiresAt])
+  @@map("vote_proposals")
+}
+
+model Vote {
+  id         String   @id @default(cuid())
+  proposalId String
+  agentId    String
+  vote       String
+  timestamp  DateTime @default(now())
+  
+  proposal VoteProposal @relation(fields: [proposalId], references: [id], onDelete: Cascade)
+
+  @@unique([proposalId, agentId])
+  @@index([proposalId])
+  @@index([agentId])
+  @@map("votes")
+}
+
+// ─── Agent Configuration: Tracked Wallets & Buy Triggers ───
+
+model TrackedWallet {
+  id        String   @id @default(cuid())
+  agentId   String
+  address   String
+  label     String?
+  chain     Chain    @default(SOLANA)
+  createdAt DateTime @default(now())
+
+  agent TradingAgent @relation(fields: [agentId], references: [id], onDelete: Cascade)
+
+  @@unique([agentId, address, chain])
+  @@index([agentId])
+  @@index([address])
+  @@map("tracked_wallets")
+}
+
+model BuyTrigger {
+  id        String   @id @default(cuid())
+  agentId   String
+  type      String   // "consensus", "volume", "liquidity", "godwallet"
+  enabled   Boolean  @default(true)
+  config    Json     // Type-specific configuration
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  agent TradingAgent @relation(fields: [agentId], references: [id], onDelete: Cascade)
+
+  @@index([agentId])
+  @@index([agentId, enabled])
+  @@map("buy_triggers")
+}
+
+// ─── BSC Integration: Token Factory Deployments ───────
+
+model TokenDeployment {
+  id             String   @id @default(cuid())
+  agentId        String
+  tokenAddress   String   @unique
+  tokenName      String
+  tokenSymbol    String
+  totalSupply    String   // BigInt as string
+  factoryTxHash  String
+  chain          Chain    @default(BSC)
+  createdAt      DateTime @default(now())
+
+  // Platform metadata
+  platform              String?   // "four.meme", "flap", null=unknown
+  imageUrl              String?
+  description           String?
+  label                 String?
+  presaleBNB            String?
+  socialLinks           Json?     // { twitter, telegram, website }
+  bondingCurveGraduated Boolean   @default(false)
+  graduationTxHash      String?
+  graduationTime        DateTime?
+  pairAddress           String?   // PancakeSwap LP pair address
+  quoteToken            String?   // Quote token in pair (WBNB, USDT, USD1)
+
+  @@index([agentId])
+  @@index([chain])
+  @@index([bondingCurveGraduated])
+  @@index([platform])
+  @@map("token_deployments")
+}
+
+// ─── Monitor State: Persistent block tracking for BSC monitors ───
+
+model MonitorState {
+  id             String   @id // e.g. "fourmeme-monitor", "bsc-trade-monitor"
+  lastBlock      Int
+  updatedAt      DateTime @updatedAt
+
+  @@map("monitor_state")
+}
+
+// ─── Distributed Locks: Prevent duplicate cron/worker execution across replicas ───
+
+model JobExecutionLock {
+  jobKey     String   @id
+  owner      String
+  expiresAt  DateTime
+  acquiredAt DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@index([expiresAt])
+  @@map("job_execution_locks")
+}
+
+// ─── News & Announcements: Platform updates, partnerships, milestones ───
+
+enum NewsCategory {
+  FEATURE      // New features, product updates
+  PARTNERSHIP  // Partnerships, integrations
+  MILESTONE    // User growth, transaction milestones
+  CHANGELOG    // Version updates, bug fixes
+  EVENT        // Hackathons, competitions, community events
+  ANNOUNCEMENT // General announcements
+}
+
+// ─── Prediction Markets ──────────────────────────────────
+
+enum PredictionPlatform {
+  KALSHI
+  DRIFT_BET
+  POLYMARKET
+  HEDGEHOG
+}
+
+enum PredictionOutcome {
+  PENDING
+  YES
+  NO
+  VOID
+}
+
+enum PredictionSide {
+  YES
+  NO
+}
+
+enum NewsCtaType {
+  MODAL         // Open modal with full content
+  EXTERNAL_LINK // Open URL in new tab
+  INTERNAL_LINK // Navigate within app
+}
+
+model NewsItem {
+  id          String       @id @default(cuid())
+  title       String       // Short headline (e.g. "🏆 SuperMolt Wins USDC Hackathon")
+  description String       @db.Text // Preview text for card
+  content     String?      @db.Text // Full markdown content for modal (optional)
+  imageUrl    String       // Background image URL
+  ctaText     String       // Button text (e.g. "Read More", "View Details")
+  ctaType     NewsCtaType  @default(MODAL)
+  ctaUrl      String?      // External URL (if ctaType = EXTERNAL_LINK)
+  category    NewsCategory @default(ANNOUNCEMENT)
+  priority    Int          @default(0) // Higher = more important (for sorting)
+  published   Boolean      @default(true)
+  publishedAt DateTime     @default(now())
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+
+  @@index([published, priority, publishedAt])
+  @@index([category])
+  @@map("news_items")
+}
+
+// ─── Prediction Markets: Cached market data + agent predictions ───
+
+model PredictionMarket {
+  id          String             @id @default(cuid())
+  platform    PredictionPlatform
+  externalId  String             // Kalshi ticker, Drift market ID, etc.
+  title       String
+  category    String             // "Crypto", "Economics", "Politics", etc.
+  subtitle    String?            @db.Text
+  yesPrice    Decimal            @db.Decimal(8, 4) // 0.0000 - 1.0000
+  noPrice     Decimal            @db.Decimal(8, 4)
+  volume      Decimal            @default(0) @db.Decimal(18, 2)
+  outcome     PredictionOutcome  @default(PENDING)
+  expiresAt   DateTime
+  closesAt    DateTime?
+  status      String             @default("open") // "open", "closed", "settled"
+  metadata    Json               @default("{}")
+  createdAt   DateTime           @default(now())
+  updatedAt   DateTime           @updatedAt
+
+  predictions AgentPrediction[]
+
+  @@unique([platform, externalId])
+  @@index([category])
+  @@index([outcome])
+  @@index([expiresAt])
+  @@index([status])
+  @@map("prediction_markets")
+}
+
+model AgentPrediction {
+  id          String            @id @default(cuid())
+  agentId     String
+  marketId    String
+  side        PredictionSide
+  contracts   Int               @default(1)
+  avgPrice    Decimal           @db.Decimal(8, 4) // Price paid per contract
+  totalCost   Decimal           @db.Decimal(18, 6)
+  payout      Decimal?          @db.Decimal(18, 6)
+  pnl         Decimal?          @db.Decimal(18, 6)
+  outcome     PredictionOutcome @default(PENDING)
+  confidence  Int?              // 0-100
+  reasoning   String?           @db.Text
+  realOrder   Boolean           @default(false) // Was a real Kalshi order placed?
+  orderId     String?           // External order ID if real
+  createdAt   DateTime          @default(now())
+  updatedAt   DateTime          @updatedAt
+
+  market PredictionMarket @relation(fields: [marketId], references: [id], onDelete: Cascade)
+
+  @@index([agentId])
+  @@index([marketId])
+  @@index([agentId, outcome])
+  @@map("agent_predictions")
+}
+
+model PredictionStats {
+  id                 String   @id @default(cuid())
+  agentId            String   @unique
+  totalPredictions   Int      @default(0)
+  correctPredictions Int      @default(0)
+  accuracy           Decimal  @default(0) @db.Decimal(5, 2) // 0.00 - 100.00
+  brierScore         Decimal  @default(1) @db.Decimal(8, 6) // 0.000000 - 1.000000 (lower = better)
+  roi                Decimal  @default(0) @db.Decimal(10, 4) // % return on investment
+  streak             Int      @default(0) // Current correct streak
+  bestStreak         Int      @default(0)
+  totalCost          Decimal  @default(0) @db.Decimal(18, 6)
+  totalPayout        Decimal  @default(0) @db.Decimal(18, 6)
+  updatedAt          DateTime @updatedAt
+  createdAt          DateTime @default(now())
+
+  @@index([accuracy])
+  @@index([brierScore])
+  @@map("prediction_stats")
+}
