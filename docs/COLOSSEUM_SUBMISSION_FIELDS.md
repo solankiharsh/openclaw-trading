@@ -1,4 +1,4 @@
-# Colosseum Agent Hackathon - SuperMolt Submission Fields
+# Colosseum Agent Hackathon - SuperClaw Submission Fields
 
 **Last Updated:** February 12, 2026
 **Deadline:** February 13, 2026 at 12pm Eastern
@@ -24,7 +24,7 @@ Non-technical users lack the skills and infrastructure to deploy smart AI tradin
 
 The problem: retail traders manually monitor dozens of platforms, miss early signals, and can't correlate social attention with on-chain behavior. By the time a coin trends on X, it's already 10x'd. They need automated agents that detect narrative signals (viral posts, engagement clusters, influencer activity) and cross-reference them with on-chain data (wallet movements, liquidity adds, migration to DEXs) in real-time. Current tools either provide social analytics (Nansen) or on-chain data (Birdeye) but don't combine both, don't execute trades autonomously, and don't verify performance on-chain.
 
-SuperMolt solves this by turning social attention and on-chain signals into a deployable agent framework that non-technical users can launch in 10 seconds, with provable performance and autonomous execution.
+SuperClaw solves this by turning social attention and on-chain signals into a deployable agent framework that non-technical users can launch in 10 seconds, with provable performance and autonomous execution.
 ```
 
 **Character Count:** 1,197 ✅
@@ -34,7 +34,7 @@ SuperMolt solves this by turning social attention and on-chain signals into a de
 ## 📝 **FIELD 2: TECHNICAL APPROACH** (1,200 chars max)
 
 ```
-SuperMolt is a Solana-native multi-agent trading infrastructure built on Bun + Hono (backend), Next.js 16 (frontend), PostgreSQL + Prisma (database), and Socket.IO + Redis (real-time state).
+SuperClaw is a Solana-native multi-agent trading infrastructure built on Bun + Hono (backend), Next.js 16 (frontend), PostgreSQL + Prisma (database), and Socket.IO + Redis (real-time state).
 
 Data Flow:
 1. Social signals → DevPrint ingests tweet feeds, TikTok trends, and narrative clusters, streaming to backend via WebSocket.
@@ -71,7 +71,7 @@ Scaling: BullMQ webhook queue handles concurrent requests across replicas. Socke
 ## 📝 **FIELD 4: BUSINESS MODEL** (1,000 chars max)
 
 ```
-SuperMolt monetizes through two aligned, scalable revenue streams:
+SuperClaw monetizes through two aligned, scalable revenue streams:
 
 **1. Performance-Based Transaction Fee (Core Revenue)**
 • 0.1% fee on successful trades executed by user-deployed AI agents.
@@ -80,7 +80,7 @@ SuperMolt monetizes through two aligned, scalable revenue streams:
 • Network effect: more agents trading → more signal aggregation → smarter strategies → higher win rates → higher transaction volume → platform value compounds for all users.
 
 **2. Developer SDK/API Subscription**
-• $100/month for access to SuperMolt's SDK, custom APIs, and Skill.md modules.
+• $100/month for access to SuperClaw's SDK, custom APIs, and Skill.md modules.
 • Provides integration with DevPrint (social feeds), Birdeye (prices), DexScreener (analytics), Helius (on-chain events), and swarm coordination tools.
 • Enables developers to prototype, deploy, and optimize agents, creating a richer ecosystem of strategies.
 • Network effect: more developers → more composable agents → better benchmarking and swarm intelligence → all users benefit from stronger, more effective execution.
@@ -105,7 +105,7 @@ SuperMolt monetizes through two aligned, scalable revenue streams:
 
 **Autonolas/Olas** — General-purpose agent ecosystems, not designed for social-to-trading correlation, lacks turnkey DEX routing (e.g., Jupiter), no swarm competition with verified rewards.
 
-**Key Differentiation:** Competitors offer AI tooling OR trading bots OR on-chain agents OR analytics. SuperMolt uniquely combines real-time social attention detection, on-chain wallet correlation, autonomous execution with multi-agent competition, and performance-aligned USDC reward scoring—all verifiable on Solana.
+**Key Differentiation:** Competitors offer AI tooling OR trading bots OR on-chain agents OR analytics. SuperClaw uniquely combines real-time social attention detection, on-chain wallet correlation, autonomous execution with multi-agent competition, and performance-aligned USDC reward scoring—all verifiable on Solana.
 ```
 
 **Character Count:** 999 ✅
@@ -115,7 +115,7 @@ SuperMolt monetizes through two aligned, scalable revenue streams:
 ## 📝 **FIELD 6: FUTURE VISION** (1,000 chars max)
 
 ```
-SuperMolt will become the leading platform for autonomous on-chain trading, where AI agents analyze social attention (X, TikTok, Instagram), DevPrint/Birdeye/Helius APIs, and on-chain signals to detect trends and execute trades without human intervention.
+SuperClaw will become the leading platform for autonomous on-chain trading, where AI agents analyze social attention (X, TikTok, Instagram), DevPrint/Birdeye/Helius APIs, and on-chain signals to detect trends and execute trades without human intervention.
 
 **6-Month Roadmap:**
 • Cross-chain expansion: Ethereum, Base, Arbitrum with multi-chain agent coordination.
@@ -125,7 +125,7 @@ SuperMolt will become the leading platform for autonomous on-chain trading, wher
 • Institutional features: API access for hedge funds, bulk agent deployment, custom analytics dashboards.
 • DAO governance: token holders vote on treasury allocation, reward multipliers, and feature prioritization.
 
-**Full-Time Commitment:** Founding team pursuing venture funding (targeting $1M seed round Q2 2026) to scale infrastructure, expand to 10,000+ concurrent agents, and build institutional-grade execution layer. Goal: process $100M+ trading volume by Q4 2026, making SuperMolt the Bloomberg Terminal of autonomous agent trading.
+**Full-Time Commitment:** Founding team pursuing venture funding (targeting $1M seed round Q2 2026) to scale infrastructure, expand to 10,000+ concurrent agents, and build institutional-grade execution layer. Goal: process $100M+ trading volume by Q4 2026, making SuperClaw the Bloomberg Terminal of autonomous agent trading.
 ```
 
 **Character Count:** 997 ✅
@@ -144,13 +144,13 @@ SuperMolt will become the leading platform for autonomous on-chain trading, wher
 
 ### **Additional Submission Items:**
 
-**Project Name:** SuperMolt
+**Project Name:** SuperClaw
 
 **Tagline:** Autonomous AI agents turn social attention + on-chain signals into profitable trades on Solana
 
 **Tags:** AI, Trading, DeFi, Social Intelligence, Autonomous Agents, USDC, Jupiter, Multi-Agent Systems
 
-**Repo Link:** https://github.com/Biliion-Dollar-Company/supermolt-mono
+**Repo Link:** https://github.com/solankiharsh/openclaw-trading
 
 **Demo Link:** https://trench-terminal-omega.vercel.app
 

@@ -10,11 +10,13 @@
 import { Hono } from 'hono';
 import { readFileSync } from 'fs';
 import { join } from 'path';
+import { fileURLToPath } from 'url';
 
 export const skillsGuide = new Hono();
 
-// Path to quickstart guide
-const QUICKSTART_PATH = join(import.meta.dir, '../../docs/quickstart.md');
+// Path to quickstart guide (works in both Bun and Node: import.meta.dir is Bun-only)
+const __dirname = fileURLToPath(new URL('.', import.meta.url));
+const QUICKSTART_PATH = join(__dirname, '../../../docs/backend/quickstart.md');
 
 /**
  * GET /skills

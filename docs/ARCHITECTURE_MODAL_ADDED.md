@@ -2,7 +2,7 @@
 
 ## What Was Added
 
-A branded **Architecture Info Button** with an interactive modal that displays the SuperMolt folder structure with concise explanations.
+A branded **Architecture Info Button** with an interactive modal that displays the SuperClaw folder structure with concise explanations.
 
 ## Component Details
 
@@ -10,7 +10,7 @@ A branded **Architecture Info Button** with an interactive modal that displays t
 
 **Features:**
 - ✅ Info button with branded styling (accent gold theme)
-- ✅ Glassmorphic modal design matching SuperMolt aesthetic
+- ✅ Glassmorphic modal design matching SuperClaw aesthetic
 - ✅ Collapsible folder tree view
 - ✅ Icons for different file types (Folder, FileText, Database, Zap)
 - ✅ Max 5-word descriptions per folder/file
@@ -59,7 +59,7 @@ web/
    - Accent gold color (#E8B45E) for primary elements
    - Glassmorphic backgrounds (backdrop-blur-xl)
    - Subtle gradients and glows
-   - Matches existing SuperMolt design system
+   - Matches existing SuperClaw design system
 
 2. **UX:**
    - Modal centered on screen with backdrop
@@ -99,7 +99,7 @@ Files Changed: 3 (+400 lines)
 Frontend will auto-deploy on Vercel when changes merge to main branch.
 
 **Expected Deploy Time:** ~2 minutes
-**Live URL:** https://www.supermolt.xyz
+**Live URL:** https://www.superclaw.xyz
 
 ## User Flow
 

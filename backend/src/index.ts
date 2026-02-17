@@ -86,10 +86,10 @@ const allowedOrigins = [
   'http://localhost:8081',
   'exp://localhost:8081',
   'https://sr-mobile-production.up.railway.app',
-  'https://supermolt.xyz',
-  'https://www.supermolt.xyz',
-  'https://supermolt.app',
-  'https://www.supermolt.app',
+  'https://superclaw.xyz',
+  'https://www.superclaw.xyz',
+  'https://superclaw.app',
+  'https://www.superclaw.app',
 ];
 
 // Middleware

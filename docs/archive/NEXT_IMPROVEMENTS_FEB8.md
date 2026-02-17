@@ -1,4 +1,4 @@
-# 🚀 Next Improvements - SuperMolt
+# 🚀 Next Improvements - SuperClaw
 
 **Status:** Backend team delivered 3 major commits ✅  
 **What's Done:** PrismaClient singleton + Webhook security + XP system  
@@ -35,8 +35,8 @@ const allowedOrigins = [
 ```
 
 **Missing:**
-- `https://www.supermolt.xyz` ← Production frontend
-- `https://supermolt.xyz` ← Production frontend (no www)
+- `https://www.superclaw.xyz` ← Production frontend
+- `https://superclaw.xyz` ← Production frontend (no www)
 - `https://trench-terminal-omega.vercel.app` ← Vercel preview
 
 **Fix:**
@@ -47,8 +47,8 @@ const allowedOrigins = [
   'http://localhost:8081',
   'exp://localhost:8081',
   'https://sr-mobile-production.up.railway.app',
-  'https://www.supermolt.xyz', // Production
-  'https://supermolt.xyz', // Production (no www)
+  'https://www.superclaw.xyz', // Production
+  'https://superclaw.xyz', // Production (no www)
   'https://trench-terminal-omega.vercel.app', // Vercel
 ];
 ```

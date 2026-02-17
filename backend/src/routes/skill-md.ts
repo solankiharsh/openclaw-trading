@@ -10,11 +10,13 @@
 import { Hono } from 'hono';
 import { readFileSync } from 'fs';
 import { join } from 'path';
+import { fileURLToPath } from 'url';
 
 export const skillMdRoute = new Hono();
 
-// Path to the skill.md file
-const SKILL_MD_PATH = join(import.meta.dir, '../../SKILL.md');
+// Path to the skill.md file (works in both Bun and Node: import.meta.dir is Bun-only)
+const __dirname = fileURLToPath(new URL('.', import.meta.url));
+const SKILL_MD_PATH = join(__dirname, '../../SKILL.md');
 
 skillMdRoute.get('/', (c) => {
   try {

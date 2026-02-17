@@ -107,8 +107,8 @@ cors({
 **Fix:**
 ```typescript
 const ALLOWED_ORIGINS = [
-  'https://www.supermolt.xyz',
-  'https://supermolt.xyz',
+  'https://www.superclaw.xyz',
+  'https://superclaw.xyz',
   process.env.NODE_ENV === 'development' ? 'http://localhost:3000' : null,
 ].filter(Boolean);
 

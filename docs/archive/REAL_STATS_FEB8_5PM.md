@@ -1,4 +1,4 @@
-# 📊 SuperMolt Real Stats - Feb 8, 2026, 5:30 PM
+# 📊 SuperClaw Real Stats - Feb 8, 2026, 5:30 PM
 
 **System operational for:** ~3 hours since onboarding fix
 
@@ -202,9 +202,9 @@
    - Gets project visibility
 
 3. **Tweet** (5 min)
-   - "@SuperRouterSol just launched SuperMolt..."
+   - "@SuperRouterSol just launched SuperClaw..."
    - Tag #Solana #AI #Trading #AgentHackathon
-   - Link to www.supermolt.xyz
+   - Link to www.superclaw.xyz
 
 ### Short-term (This Week)
 

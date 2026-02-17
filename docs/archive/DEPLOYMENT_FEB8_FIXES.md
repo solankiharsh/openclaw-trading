@@ -1,4 +1,4 @@
-# 🚀 SuperMolt Deployment Guide - Feb 8 Fixes
+# 🚀 SuperClaw Deployment Guide - Feb 8 Fixes
 
 **Status:** Ready to deploy  
 **Changes:** 9 bug fixes + XP system enhancements  
@@ -43,7 +43,7 @@
 
 ```bash
 # 1. Get DATABASE_URL from Railway
-# Go to: Railway Dashboard → SuperMolt → PostgreSQL → Connect tab
+# Go to: Railway Dashboard → SuperClaw → PostgreSQL → Connect tab
 # Copy the DATABASE_URL
 
 # 2. Export it
@@ -113,7 +113,7 @@ git push origin main
 
 **Verify:**
 - Vercel build succeeds (~90s)
-- Visit: https://www.supermolt.xyz
+- Visit: https://www.superclaw.xyz
 - Check XP leaderboard tab appears
 - Click an agent → profile page loads
 
@@ -127,7 +127,7 @@ curl https://sr-mobile-production.up.railway.app/health
 curl https://sr-mobile-production.up.railway.app/api/arena/leaderboard/xp | jq '.'
 
 # Frontend loads
-curl -I https://www.supermolt.xyz
+curl -I https://www.superclaw.xyz
 
 # Test SIWS auth (create test agent)
 # Visit frontend, try signing in with a wallet

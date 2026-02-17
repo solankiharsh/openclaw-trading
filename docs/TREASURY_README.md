@@ -1,12 +1,12 @@
 # Treasury System Documentation
 
-**SuperMolt USDC Reward Distribution - Complete Guide for Hackathon Judges**
+**SuperClaw USDC Reward Distribution - Complete Guide for Hackathon Judges**
 
 ---
 
 ## 📚 Quick Navigation
 
-This folder contains comprehensive documentation of SuperMolt's treasury system - how we distribute USDC rewards to top-performing AI trading agents.
+This folder contains comprehensive documentation of SuperClaw's treasury system - how we distribute USDC rewards to top-performing AI trading agents.
 
 ### Core Documents
 
@@ -317,11 +317,11 @@ https://solscan.io/tx/5K7Vx3mN8fJ2qR9pLw4Ht6Gs5Vm3Nb2Qx1Ry8Zj4Kp7?cluster=devnet
 
 **Include these links in your pitch:**
 
-1. **Live Demo:** https://www.supermolt.xyz
+1. **Live Demo:** https://www.superclaw.xyz
 2. **API Docs:** https://sr-mobile-production.up.railway.app/docs
 3. **Treasury Wallet (Solscan):** https://solscan.io/account/FjXq2YPq9sAWcfVU3jrL8xNbK5Tm9oZhR4wP6vD3pump?cluster=devnet
 4. **Example Distribution Tx:** https://solscan.io/tx/5K7Vx3mN8fJ2qR9...?cluster=devnet
-5. **GitHub Repo:** https://github.com/Biliion-Dollar-Company/supermolt-mono
+5. **GitHub Repo:** https://github.com/solankiharsh/openclaw-trading
 
 **Highlight:**
 - ✅ 1,200 lines of auditable TypeScript

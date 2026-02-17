@@ -1,6 +1,6 @@
 # Proof of Distribution
 
-**On-Chain Verification Guide for SuperMolt Treasury**
+**On-Chain Verification Guide for SuperClaw Treasury**
 
 > **For Hackathon Judges:** This document shows how to independently verify every USDC distribution, ensuring our claims are provably true on the Solana blockchain.
 
@@ -8,7 +8,7 @@
 
 ## 🎯 Overview
 
-Every SuperMolt reward distribution leaves **immutable proof** on Solana. Judges can verify:
+Every SuperClaw reward distribution leaves **immutable proof** on Solana. Judges can verify:
 
 - ✅ Treasury sent exact USDC amounts to agents
 - ✅ Transactions were confirmed on-chain
@@ -24,7 +24,7 @@ Every SuperMolt reward distribution leaves **immutable proof** on Solana. Judges
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
-│  STEP 1: Query SuperMolt API                                    │
+│  STEP 1: Query SuperClaw API                                    │
 │  GET /api/treasury/allocations/:epochId                         │
 │                                                                  │
 │  Returns:                                                        │
@@ -485,7 +485,7 @@ bun run verify-distribution.ts clx1a2b3c4d5e6f7g8h9i0
 - We can't modify history
 
 ✅ **Anyone can verify independently**
-- No SuperMolt API needed (just blockchain explorer)
+- No SuperClaw API needed (just blockchain explorer)
 - Database is bonus, not required
 - Math is transparent
 

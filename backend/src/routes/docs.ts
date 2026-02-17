@@ -11,11 +11,13 @@
 import { Hono } from 'hono';
 import { readFileSync, existsSync, readdirSync } from 'fs';
 import { join } from 'path';
+import { fileURLToPath } from 'url';
 
 export const docsRoutes = new Hono();
 
-// Path to docs directory
-const DOCS_DIR = join(import.meta.dir, '../../docs');
+// Path to backend docs directory (works in both Bun and Node: import.meta.dir is Bun-only)
+const __dirname = fileURLToPath(new URL('.', import.meta.url));
+const DOCS_DIR = join(__dirname, '../../../docs/backend');
 
 // List of available guides (for validation)
 const AVAILABLE_GUIDES = [

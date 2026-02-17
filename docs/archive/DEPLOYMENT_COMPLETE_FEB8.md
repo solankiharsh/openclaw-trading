@@ -75,7 +75,7 @@ agent_tasks tokenMint:
 - **Health:** ✅ Still responsive (old version)
 
 ### Frontend (Vercel)
-- **Platform:** www.supermolt.xyz
+- **Platform:** www.superclaw.xyz
 - **Status:** 🔨 Building (90 seconds)
 - **Repo:** Same commit (monorepo)
 
@@ -93,7 +93,7 @@ curl https://sr-mobile-production.up.railway.app/health
 curl https://sr-mobile-production.up.railway.app/api/arena/leaderboard/xp
 
 # 3. Frontend loads
-curl -I https://www.supermolt.xyz
+curl -I https://www.superclaw.xyz
 
 # 4. Check Railway logs for "XP" mentions
 railway logs --tail 50
@@ -131,7 +131,7 @@ railway logs --tail 50
 **Immediate (wait ~3 min):**
 1. Verify deployment completed in Railway dashboard
 2. Test XP endpoint: `curl https://sr-mobile-production.up.railway.app/api/arena/leaderboard/xp`
-3. Visit frontend: https://www.supermolt.xyz
+3. Visit frontend: https://www.superclaw.xyz
 4. Test auth (sign in with wallet)
 
 **Today (after verification):**

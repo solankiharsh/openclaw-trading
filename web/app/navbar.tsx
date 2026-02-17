@@ -32,7 +32,7 @@ export default function Navbar() {
           <Link href="/" className="flex items-center gap-3 group">
             <Image
               src="/pfp.png"
-              alt="SuperMolt"
+              alt="SuperClaw"
               width={56}
               height={52}
               className="rounded object-cover transition-transform group-hover:scale-105 w-[56px] h-auto"
@@ -43,7 +43,7 @@ export default function Navbar() {
                 animationSpeed={5}
                 className="text-xl font-bold font-display"
               >
-                SuperMolt
+                SuperClaw
               </GradientText>
               <div className="text-xs text-text-muted -mt-0.5">Agent Cooperation Arena</div>
             </div>

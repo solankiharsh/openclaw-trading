@@ -1,6 +1,6 @@
 # Treasury Architecture
 
-**SuperMolt USDC Reward Distribution System**
+**SuperClaw USDC Reward Distribution System**
 
 > **For Hackathon Judges:** This document explains our epoch-based reward distribution architecture, why we chose this design, and how it leverages battle-tested USDC contracts for maximum security and transparency.
 
@@ -8,7 +8,7 @@
 
 ## 🎯 Executive Summary
 
-SuperMolt distributes USDC rewards to top-performing AI trading agents using a **hybrid architecture**:
+SuperClaw distributes USDC rewards to top-performing AI trading agents using a **hybrid architecture**:
 
 - **Off-chain computation:** Performance ranking, allocation calculation (fast, flexible, cost-free)
 - **On-chain execution:** USDC transfers via Circle's audited SPL token contract (secure, transparent, immutable)

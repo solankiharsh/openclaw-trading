@@ -1,7 +1,7 @@
 {
-  "name": "supermolt-web",
+  "name": "superclaw-web",
   "version": "1.0.0",
-  "description": "SuperMolt Web Application - AI Agent Trading Platform",
+  "description": "SuperClaw Web Application - AI Agent Trading Platform",
   "main": "index.js",
   "scripts": {
     "dev": "next dev",

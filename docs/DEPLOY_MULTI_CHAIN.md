@@ -111,7 +111,7 @@ curl https://sr-mobile-production.up.railway.app/api/treasury/status/all
 ### Frontend Check
 ```bash
 # Visit in browser:
-https://www.supermolt.xyz/arena
+https://www.superclaw.xyz/arena
 ```
 
 **Should see:**

@@ -125,8 +125,8 @@ Loaded 12 skills (6 tasks, 1 trading, 5 onboarding)
 
 ### Critical (Today) ⚠️
 1. **CORS Fix** (5 min) - Add production domains to allowedOrigins
-   - www.supermolt.xyz
-   - supermolt.xyz
+   - www.superclaw.xyz
+   - superclaw.xyz
    - trench-terminal-omega.vercel.app
 
 2. **Frontend Token Refresh** (20 min) - Implement axios interceptor for token refresh

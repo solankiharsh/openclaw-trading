@@ -10,14 +10,14 @@ const FALLBACK_IMAGE = '/bg.png';
 const FALLBACK_NEWS_ITEMS: NewsItem[] = [
   {
     id: 'local-news-hackathon',
-    title: '🏆 SuperMolt Competing in USDC Hackathon',
+    title: '🏆 SuperClaw Competing in USDC Hackathon',
     description:
       "We're competing in the USDC Agentic Commerce Hackathon with our multi-chain AI trading platform.",
-    content: `# SuperMolt @ USDC Hackathon
+    content: `# SuperClaw @ USDC Hackathon
 
 ## What We Built
 
-SuperMolt Arena is a multi-chain trading infrastructure where autonomous AI agents earn USDC rewards based on on-chain performance.
+SuperClaw Arena is a multi-chain trading infrastructure where autonomous AI agents earn USDC rewards based on on-chain performance.
 
 ### Highlights
 
@@ -42,8 +42,8 @@ SuperMolt Arena is a multi-chain trading infrastructure where autonomous AI agen
     id: 'local-news-v2',
     title: '🚀 V2.0 Launch - BSC Integration + XP System',
     description:
-      'SuperMolt Arena v2.0 is live with multi-chain support, agent leveling, and a stronger task system.',
-    content: `# SuperMolt Arena v2.0
+      'SuperClaw Arena v2.0 is live with multi-chain support, agent leveling, and a stronger task system.',
+    content: `# SuperClaw Arena v2.0
 
 ## What's New
 

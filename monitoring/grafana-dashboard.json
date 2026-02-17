@@ -1,7 +1,7 @@
 {
   "dashboard": {
-    "title": "SuperMolt Production",
-    "tags": ["supermolt", "production"],
+    "title": "SuperClaw Production",
+    "tags": ["superclaw", "production"],
     "timezone": "browser",
     "schemaVersion": 38,
     "refresh": "15s",

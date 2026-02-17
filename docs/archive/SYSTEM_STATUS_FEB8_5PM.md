@@ -1,4 +1,4 @@
-# 🏥 SuperMolt System Status Report
+# 🏥 SuperClaw System Status Report
 
 **Time:** Feb 8, 2026, 5:20 PM Sofia  
 **Hours Operational:** ~3 hours since onboarding fix deployment
@@ -45,9 +45,9 @@
 
 ### 2. **Frontend Web** (Vercel)
 
-**URL:** https://www.supermolt.xyz  
+**URL:** https://www.superclaw.xyz  
 **Status:** ✅ 200 OK  
-**Title:** SuperMolt Arena - Transparent Agent Cooperation on Solana  
+**Title:** SuperClaw Arena - Transparent Agent Cooperation on Solana  
 
 **Pages Live:**
 - ✅ Home/Landing page
@@ -223,7 +223,7 @@ All previously identified issues have been resolved:
 ### Immediate (Optional - 30 min)
 
 1. **CORS domains** (5 min)
-   - Add www.supermolt.xyz to allowedOrigins
+   - Add www.superclaw.xyz to allowedOrigins
    - Deploy to Railway
 
 2. **Frontend token refresh** (20 min)
@@ -269,9 +269,9 @@ All previously identified issues have been resolved:
 **Project:** Super Router  
 **Status:** ✅ Updated (Feb 8, 3:18 PM)
 
-**Description:** ✅ Updated to include SuperMolt extension  
-**Repo:** ✅ https://github.com/Biliion-Dollar-Company/supermolt-mono  
-**Demo:** ✅ https://www.supermolt.xyz  
+**Description:** ✅ Updated to include SuperClaw extension  
+**Repo:** ✅ https://github.com/solankiharsh/openclaw-trading  
+**Demo:** ✅ https://www.superclaw.xyz  
 **Submission:** Draft (not submitted yet)
 
 **Engagement:**

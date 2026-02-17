@@ -14,11 +14,14 @@ help: ## Show this help message
 	@echo ""
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "  $(GREEN)%-20s$(NC) %s\n", $$1, $$2}'
 
+# Prefer Bun when installed (e.g. ~/.bun/bin)
+export PATH := $(HOME)/.bun/bin:$(PATH)
+
 # ── Installation & Setup ────────────────────────────────────────
 
-install: ## Install all dependencies (backend, web, mobile)
+install: ## Install all dependencies (backend, web, mobile). Uses Bun for backend when available, else npm.
 	@echo "$(BLUE)Installing dependencies...$(NC)"
-	@cd backend && bun install
+	@cd backend && (command -v bun >/dev/null 2>&1 && bun install || npm install)
 	@cd web && npm install
 	@cd mobile && npm install
 	@echo "$(GREEN)✓ Dependencies installed$(NC)"
@@ -40,39 +43,44 @@ env-setup: ## Create .env files from examples
 
 db-setup: ## Setup PostgreSQL database
 	@echo "$(BLUE)Setting up database...$(NC)"
-	@cd backend && bunx prisma generate
-	@cd backend && bunx prisma db push --accept-data-loss || echo "$(YELLOW)⚠ Database setup may require manual configuration$(NC)"
+	@cd backend && (command -v bunx >/dev/null 2>&1 && bunx prisma generate || npx prisma generate)
+	@cd backend && (command -v bunx >/dev/null 2>&1 && bunx prisma db push --accept-data-loss || npx prisma db push --accept-data-loss) || echo "$(YELLOW)⚠ Database setup may require manual configuration$(NC)"
 	@echo "$(GREEN)✓ Database setup complete$(NC)"
 
 db-migrate: ## Run database migrations
 	@echo "$(BLUE)Running migrations...$(NC)"
-	@cd backend && bunx prisma migrate dev
+	@cd backend && (command -v bunx >/dev/null 2>&1 && bunx prisma migrate dev || npx prisma migrate dev)
 	@echo "$(GREEN)✓ Migrations complete$(NC)"
 
 db-reset: ## Reset database (WARNING: deletes all data)
 	@echo "$(YELLOW)⚠ Resetting database...$(NC)"
-	@cd backend && bunx prisma migrate reset --force
+	@cd backend && (command -v bunx >/dev/null 2>&1 && bunx prisma migrate reset --force || npx prisma migrate reset --force)
 	@echo "$(GREEN)✓ Database reset$(NC)"
 
 db-studio: ## Open Prisma Studio (database GUI)
 	@echo "$(BLUE)Opening Prisma Studio...$(NC)"
-	@cd backend && bunx prisma studio
+	@cd backend && (command -v bunx >/dev/null 2>&1 && bunx prisma studio || npx prisma studio)
 
 # ── Development ────────────────────────────────────────────────
 
+# Backend port (should match backend/.env.local PORT)
+BACKEND_PORT ?= 3002
+
 dev: ## Start all services in development mode
 	@echo "$(BLUE)Starting development servers...$(NC)"
-	@echo "$(YELLOW)Backend: http://localhost:3002$(NC)"
+	@echo "$(YELLOW)Backend: http://localhost:$(BACKEND_PORT)$(NC)"
 	@echo "$(YELLOW)Web: http://localhost:3000$(NC)"
 	@echo "$(YELLOW)Press Ctrl+C to stop all services$(NC)"
 	@make -j3 dev-backend dev-web dev-mobile || true
 
-dev-backend: ## Start backend server only
+dev-backend: ## Start backend server only (uses npm run dev:node if Bun not installed)
 	@echo "$(BLUE)Starting backend...$(NC)"
-	@cd backend && bun run dev
+	@lsof -ti:$(BACKEND_PORT) 2>/dev/null | xargs kill -9 2>/dev/null || true
+	@cd backend && (command -v bun >/dev/null 2>&1 && bun run dev || npm run dev:node)
 
-dev-web: ## Start web frontend only
+dev-web: ## Start web frontend only (removes stale Next dev lock so make dev can restart cleanly)
 	@echo "$(BLUE)Starting web frontend...$(NC)"
+	@rm -f web/.next/dev/lock 2>/dev/null || true
 	@cd web && npm run dev
 
 dev-mobile: ## Start mobile app (Expo)
@@ -83,9 +91,9 @@ dev-mobile: ## Start mobile app (Expo)
 
 build: build-backend build-web ## Build all services for production
 
-build-backend: ## Build backend
+build-backend: ## Build backend (typecheck only when Bun not installed)
 	@echo "$(BLUE)Building backend...$(NC)"
-	@cd backend && bun run build
+	@cd backend && (command -v bun >/dev/null 2>&1 && bun run build || npm run typecheck)
 	@echo "$(GREEN)✓ Backend built$(NC)"
 
 build-web: ## Build web frontend
@@ -98,7 +106,7 @@ start: ## Start production servers
 	@make -j2 start-backend start-web || true
 
 start-backend: ## Start backend in production mode
-	@cd backend && bun run start
+	@cd backend && (command -v bun >/dev/null 2>&1 && bun run start || npm run start:node)
 
 start-web: ## Start web in production mode
 	@cd web && npm run start
@@ -109,7 +117,7 @@ test: test-backend test-web ## Run all tests
 
 test-backend: ## Run backend tests
 	@echo "$(BLUE)Running backend tests...$(NC)"
-	@cd backend && bun test || echo "$(YELLOW)⚠ No tests configured$(NC)"
+	@cd backend && (command -v bun >/dev/null 2>&1 && bun test || npm test) || echo "$(YELLOW)⚠ No tests configured$(NC)"
 
 test-web: ## Run web tests
 	@echo "$(BLUE)Running web tests...$(NC)"
@@ -119,7 +127,7 @@ lint: lint-backend lint-web ## Lint all code
 
 lint-backend: ## Lint backend code
 	@echo "$(BLUE)Linting backend...$(NC)"
-	@cd backend && bun run lint || echo "$(YELLOW)⚠ Linting not configured$(NC)"
+	@cd backend && (command -v bun >/dev/null 2>&1 && bun run lint || npm run lint) || echo "$(YELLOW)⚠ Linting not configured$(NC)"
 
 lint-web: ## Lint web code
 	@echo "$(BLUE)Linting web...$(NC)"
@@ -127,14 +135,14 @@ lint-web: ## Lint web code
 
 typecheck: ## Type check all TypeScript
 	@echo "$(BLUE)Type checking...$(NC)"
-	@cd backend && bun run typecheck
+	@cd backend && (command -v bun >/dev/null 2>&1 && bun run typecheck || npm run typecheck)
 	@cd web && npm run type-check || npm run typecheck || echo "$(YELLOW)⚠ Type checking not configured$(NC)"
 
 # ── Database Operations ────────────────────────────────────────
 
 db-seed: ## Seed database with sample data
 	@echo "$(BLUE)Seeding database...$(NC)"
-	@cd backend && bunx prisma db seed || echo "$(YELLOW)⚠ No seed script configured$(NC)"
+	@cd backend && (command -v bunx >/dev/null 2>&1 && bunx prisma db seed || npx prisma db seed) || echo "$(YELLOW)⚠ No seed script configured$(NC)"
 
 # ── Cleanup ────────────────────────────────────────────────────
 
@@ -174,6 +182,7 @@ restart: stop start ## Restart all services
 stop: ## Stop all services (Ctrl+C in dev mode)
 	@echo "$(YELLOW)Use Ctrl+C to stop dev servers$(NC)"
 	@pkill -f "bun.*dev" || true
+	@pkill -f "tsx watch" || true
 	@pkill -f "next.*dev" || true
 	@pkill -f "expo.*start" || true
 

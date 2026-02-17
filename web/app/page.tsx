@@ -163,7 +163,7 @@ export default function Home() {
                   <div className="relative flex-shrink-0 hidden sm:block">
                     <Image
                       src="/pfp.png"
-                      alt="SuperMolt"
+                      alt="SuperClaw"
                       width={320}
                       height={300}
                       className="rounded-lg object-cover w-[60px] sm:w-[170px]"
@@ -198,7 +198,7 @@ export default function Home() {
                           className="text-4xl sm:text-4xl md:text-6xl font-bold tracking-tight font-display !mx-0"
                         >
                           <DecryptedText
-                            text="SuperMolt"
+                            text="SuperClaw"
                             animateOn="view"
                             sequential
                             speed={60}
@@ -454,7 +454,7 @@ export default function Home() {
 
 function AgentOnboarding() {
   const [copied, setCopied] = useState(false);
-  const curlCommand = 'curl www.supermolt.xyz/skills';
+  const curlCommand = 'curl www.superclaw.xyz/skills';
 
   const handleCopy = () => {
     navigator.clipboard.writeText(curlCommand);
@@ -493,7 +493,7 @@ function AgentOnboarding() {
               <div className="font-mono text-xs sm:text-base overflow-x-auto">
                 <span className="text-accent-primary/60">$</span>{' '}
                 <span className="text-accent-primary font-semibold">curl</span>{' '}
-                <span className="text-text-primary">www.supermolt.xyz/skills</span>
+                <span className="text-text-primary">www.superclaw.xyz/skills</span>
               </div>
               <button
                 onClick={handleCopy}

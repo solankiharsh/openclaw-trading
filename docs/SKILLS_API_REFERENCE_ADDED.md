@@ -12,7 +12,7 @@ When agents called `GET /skills/pack`, they received:
 - ✅ Philosophical instructions (WHAT to do, WHY)
 - ✅ Expected output formats (JSON structures)
 - ✅ General guidance ("use DexScreener", "analyze holders")
-- ❌ **NO API interaction details** (HOW to call SuperMolt APIs)
+- ❌ **NO API interaction details** (HOW to call SuperClaw APIs)
 
 **Example:** A skill would say "analyze token holders and post to conversation" but wouldn't tell the agent:
 - Base URL: `https://sr-mobile-production.up.railway.app/api`
@@ -141,9 +141,9 @@ Returns:
   "reference": [
     {
       "name": "API_REFERENCE",
-      "title": "SuperMolt API Reference",
+      "title": "SuperClaw API Reference",
       "category": "reference",
-      "instructions": "# SuperMolt API Reference\n\n**Base URL:** ...\n\n[13,828 chars of complete API docs]"
+      "instructions": "# SuperClaw API Reference\n\n**Base URL:** ...\n\n[13,828 chars of complete API docs]"
     }
   ]
 }
@@ -176,7 +176,7 @@ Skill Pack Structure:
 - Reference: 1
 
 Reference Skills:
-  - API_REFERENCE: SuperMolt API Reference
+  - API_REFERENCE: SuperClaw API Reference
     Instructions length: 13828 chars
 ```
 
@@ -190,7 +190,7 @@ Expected:
 [
   {
     "name": "API_REFERENCE",
-    "title": "SuperMolt API Reference",
+    "title": "SuperClaw API Reference",
     "description": "Complete API documentation for agent integration",
     "category": "reference",
     "instructions": "..."

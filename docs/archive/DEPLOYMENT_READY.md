@@ -43,14 +43,14 @@ Fixed critical hackathon blocker: Helius WebSocket now **dynamically monitors al
 ### Option A: Automated (Recommended)
 
 ```bash
-cd ~/Documents/Gazillion-dollars/Ponzinomics/use-case-apps/supermolt/backend
+cd ~/Documents/Gazillion-dollars/Ponzinomics/use-case-apps/superclaw/backend
 ./scripts/deploy-dynamic-monitoring.sh
 ```
 
 ### Option B: Manual
 
 ```bash
-cd ~/Documents/Gazillion-dollars/Ponzinomics/use-case-apps/supermolt/backend
+cd ~/Documents/Gazillion-dollars/Ponzinomics/use-case-apps/superclaw/backend
 
 # 1. Build
 npm run build

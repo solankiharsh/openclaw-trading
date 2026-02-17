@@ -121,7 +121,7 @@ Expected: 0 rows
 ## 🚀 Status
 
 **Git:** ✅ Committed and pushed  
-**GitHub:** ✅ Visible at Biliion-Dollar-Company/supermolt-mono  
+**GitHub:** ✅ Visible at solankiharsh/openclaw-trading  
 **Railway:** 🔨 Deploying now  
 **ETA:** 2-3 minutes  
 **Expected Completion:** ~18:53 Sofia
