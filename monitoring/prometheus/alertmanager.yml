@@ -21,7 +21,7 @@ route:
       group_wait: 10s
       repeat_interval: 1h
     
-    # Warning alerts → supermolt-alerts (no ping)
+    # Warning alerts → superclaw-alerts (no ping)
     - match:
         severity: warning
       receiver: 'slack-warning'
@@ -37,16 +37,16 @@ route:
 receivers:
   - name: 'default'
     slack_configs:
-      - channel: '#supermolt-alerts'
-        username: 'SuperMolt Alerts'
+      - channel: '#superclaw-alerts'
+        username: 'SuperClaw Alerts'
         icon_emoji: ':rotating_light:'
         title: '{{ .GroupLabels.alertname }}'
         text: '{{ range .Alerts }}{{ .Annotations.description }}{{ end }}'
   
   - name: 'slack-critical'
     slack_configs:
-      - channel: '#supermolt-alerts'
-        username: 'SuperMolt Alerts'
+      - channel: '#superclaw-alerts'
+        username: 'SuperClaw Alerts'
         icon_emoji: ':rotating_light:'
         title: '{{ .GroupLabels.alertname }}'
         text: '<!here>\n{{ range .Alerts }}{{ .Annotations.description }}\n\n[View Dashboard](https://grafana.railway.app){{ end }}'
@@ -54,8 +54,8 @@ receivers:
   
   - name: 'slack-warning'
     slack_configs:
-      - channel: '#supermolt-alerts'
-        username: 'SuperMolt Alerts'
+      - channel: '#superclaw-alerts'
+        username: 'SuperClaw Alerts'
         icon_emoji: ':warning:'
         title: '{{ .GroupLabels.alertname }}'
         text: '{{ range .Alerts }}{{ .Annotations.description }}\n\n[View Dashboard](https://grafana.railway.app){{ end }}'
@@ -63,8 +63,8 @@ receivers:
   
   - name: 'slack-info'
     slack_configs:
-      - channel: '#supermolt-metrics'
-        username: 'SuperMolt Metrics'
+      - channel: '#superclaw-metrics'
+        username: 'SuperClaw Metrics'
         icon_emoji: ':chart_with_upwards_trend:'
         title: '{{ .GroupLabels.alertname }}'
         text: '{{ range .Alerts }}{{ .Annotations.description }}{{ end }}'
