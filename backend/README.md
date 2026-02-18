@@ -97,7 +97,7 @@ The script loads `backend/.env` and `backend/.env.local`, then verifies the data
 1. **Set Root Directory**: In Railway → **your backend service** (not Project Settings) → **Settings** → **Source** → set **Root Directory** to `backend`.  
    If this is not set, `bun install` runs at repo root (no backend deps), and the app fails at start with "Could not resolve: hono". The `build` script in package.json is a no-op so Nixpacks doesn't need to bundle; the process runs via `bun run src/index.ts` in `start`.
 
-2. Build uses Nixpacks (`backend/nixpacks.toml`): `bun install` then start with `bun run start` (from `backend/railway.json`: runs Prisma generate, db push, then `bun run src/index.ts`). To produce a `dist/` bundle locally use `bun run build:bundle`.
+2. Build (from `backend/railway.json`): runs `bun install && bunx prisma generate && bunx prisma db push --accept-data-loss` so the DB is ready before the container starts. Start command is `bun run src/index.ts` only, so the server listens immediately and the healthcheck can pass. `DATABASE_URL` must be set in the service (Railway provides it at build time). To produce a `dist/` bundle locally use `bun run build:bundle`.
 
 3. **Variables**: In Railway → your backend service → **Variables** (or **Settings** → **Variables**), add the following.  
    Use **Add Variable** / **Raw Editor** and paste name/value. Replace placeholders with real values.
