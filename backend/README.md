@@ -65,6 +65,15 @@ Railway is for deploying the **backend** only. Your frontend is on Vercel. The "
 - Set its **Root Directory** to `backend` and add the required variables (DATABASE_URL, PRIVY_APP_ID, PRIVY_APP_SECRET, JWT_SECRET, NODE_ENV).
 - **Remove or ignore** the other service(s). You can delete the extra service in Railway → that service → Settings → Danger → Remove.
 
+### "cd: web: No such file or directory" in deploy logs
+
+Railway runs `cd <Root Directory>` before build/start. If your service is **named "web"**, Railway may have set Root Directory to `web` (the frontend folder). This repo’s backend lives in **`backend/`**, not `web/`. Fix:
+
+1. Open the **service** that should run the backend (the one showing this error).
+2. Go to **Settings** → **Source** (or **Build** / **Repository**).
+3. Set **Root Directory** to **`backend`** (not `web`). Save.
+4. Redeploy. Commands will run from `backend/`, so `bun install` and `bun run start` use the correct package.json.
+
 ### Check DATABASE_URL locally (Supabase)
 
 From the backend directory, after `bun install`:
