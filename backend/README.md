@@ -11,12 +11,13 @@
 3. **Settings** (gear) → **Database**.
 4. Under **Connection string**, choose **URI**.
 5. Copy the URI and replace `[YOUR-PASSWORD]` with your database password.  
-   **For Prisma `db push` and startup reliability on Railway:**  
-   - Prefer the **direct** connection (Supabase → Database → Connection string → **URI** → use the one with port **5432** if shown, or Session mode).  
-   - If you only have the pooler URL (port **6543**), add `?pgbouncer=true&connection_limit=1` so Prisma works with the pooler.  
-   - Ensure SSL: add `?sslmode=require` (or `&sslmode=require` if the URL already has `?`).  
-   Example: `postgresql://postgres.xxx:[PASSWORD]@aws-1-ap-south-1.pooler.supabase.com:6543/postgres?pgbouncer=true&sslmode=require`  
-   Save this as your `DATABASE_URL`.
+   **Two URLs are required** (see `backend/.env.example`):  
+   - **`DATABASE_URL`**: Use the **transaction-mode pooler** (port **6543**) for the app, e.g.  
+     `postgresql://postgres.xxx:[PASSWORD]@aws-1-ap-south-1.pooler.supabase.com:6543/postgres?pgbouncer=true&sslmode=require`  
+   - **`DIRECT_URL`**: Use the **session-mode pooler** (port **5432**) for Prisma migrations and `db push`.  
+     Same host and path as above, but change the port from **6543** to **5432**.  
+     If you use 6543 for `DIRECT_URL`, `npx prisma db push` will hang (Supavisor transaction mode doesn’t support the operations Prisma runs).  
+   Ensure SSL: add `?sslmode=require` (or `&sslmode=require` if the URL already has `?`).
 
 ### Step 2: Create Railway project and backend service
 
@@ -43,7 +44,8 @@ This makes install/build run inside `backend/`, so `bun install` and `bun run st
 
 | Variable | Value |
 |----------|--------|
-| `DATABASE_URL` | The Supabase Postgres URI from Step 1. |
+| `DATABASE_URL` | Supabase Postgres URI (transaction pooler, port 6543). |
+| `DIRECT_URL` | Supabase Postgres URI for migrations (session pooler, port 5432 — same URL as above but use port **5432** so `db push` doesn’t hang). |
 | `PRIVY_APP_ID` | From [Privy Dashboard](https://dashboard.privy.io) → your app. |
 | `PRIVY_APP_SECRET` | From Privy Dashboard. |
 | `JWT_SECRET` | At least 32 characters (e.g. run `openssl rand -base64 32`). |
@@ -64,6 +66,17 @@ Railway is for deploying the **backend** only. Your frontend is on Vercel. The "
 - **Keep one service** (e.g. rename it to "backend" in Railway).
 - Set its **Root Directory** to `backend` and add the required variables (DATABASE_URL, PRIVY_APP_ID, PRIVY_APP_SECRET, JWT_SECRET, NODE_ENV).
 - **Remove or ignore** the other service(s). You can delete the extra service in Railway → that service → Settings → Danger → Remove.
+
+### Connect Vercel frontend to the Railway backend
+
+Once the backend is **Online** on Railway, use its URL for your Vercel frontend:
+
+1. In **Railway** → your backend service → copy the public URL (e.g. `https://web-production-564c3.up.railway.app`).
+2. In **Vercel** → your frontend project → **Settings** → **Environment Variables**.
+3. Add (or update):
+   - **`NEXT_PUBLIC_API_URL`** = `https://<your-railway-url>` (e.g. `https://web-production-564c3.up.railway.app`) — no trailing slash.
+   - **`NEXT_PUBLIC_WS_URL`** = `wss://<your-railway-url>` (same host, `wss://` for WebSockets).
+4. Redeploy the Vercel app so the new variables are picked up. The frontend will then call the Railway backend for auth, arena, and API.
 
 ### "cd: web: No such file or directory" in deploy logs
 
@@ -106,7 +119,8 @@ The script loads `backend/.env` and `backend/.env.local`, then verifies the data
 
 | Variable | Example / notes |
 |----------|------------------|
-| `DATABASE_URL` | From Railway: add a **PostgreSQL** plugin to the project, then reference `DATABASE_URL` (Railway injects it) or copy the connection string. |
+| `DATABASE_URL` | From Railway: add a **PostgreSQL** plugin to the project, then reference `DATABASE_URL` (Railway injects it) or copy the connection string. For Supabase use pooler port 6543. |
+| `DIRECT_URL` | For **Supabase**: same as `DATABASE_URL` but port **5432** (session mode), so Prisma `db push` / migrations don’t hang. For **Railway** or single DB: set to the same value as `DATABASE_URL`. |
 | `PRIVY_APP_ID` | From [Privy Dashboard](https://dashboard.privy.io) → your app. |
 | `PRIVY_APP_SECRET` | From Privy Dashboard → your app (keep secret). |
 | `JWT_SECRET` | Any random string **at least 32 characters** (e.g. `openssl rand -base64 32`). |
@@ -143,4 +157,5 @@ Add a PostgreSQL service in Railway first, then in the backend service Variables
 - `PRIVY_APP_SECRET` = (from Privy)
 - `JWT_SECRET` = (min 32 chars, e.g. from `openssl rand -base64 32`)
 - `DATABASE_URL` = (usually auto-set by Railway when you link the Postgres service; otherwise paste the connection string)
+- `DIRECT_URL` = (same as `DATABASE_URL` for Railway; for Supabase use the same URL with port 5432 instead of 6543)
 - `NODE_ENV` = `production`
