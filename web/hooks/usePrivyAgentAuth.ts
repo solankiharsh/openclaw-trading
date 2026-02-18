@@ -32,9 +32,15 @@ export function usePrivyAgentAuth() {
         throw new Error('Could not get Privy access token');
       }
 
+      // #region agent log
+      fetch('http://127.0.0.1:7245/ingest/3b42d969-38a3-41ef-acb2-0b0d1db5bbe4',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'usePrivyAgentAuth.ts:runExchange',message:'before login',data:{step:'login'},timestamp:Date.now(),hypothesisId:'H1'})}).catch(()=>{});
+      // #endregion
       console.log('[auth] Exchanging Privy token for backend JWT...');
       const loginResponse = await loginWithPrivyToken(privyToken);
 
+      // #region agent log
+      fetch('http://127.0.0.1:7245/ingest/3b42d969-38a3-41ef-acb2-0b0d1db5bbe4',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'usePrivyAgentAuth.ts:runExchange',message:'login success',data:{step:'after_login'},timestamp:Date.now(),hypothesisId:'H2'})}).catch(()=>{});
+      // #endregion
       const currentUser = userRef.current;
       const twitterProfile = currentUser?.twitter;
       const quickstartPayload = twitterProfile?.username
@@ -45,6 +51,9 @@ export function usePrivyAgentAuth() {
           }
         : undefined;
 
+      // #region agent log
+      fetch('http://127.0.0.1:7245/ingest/3b42d969-38a3-41ef-acb2-0b0d1db5bbe4',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'usePrivyAgentAuth.ts:runExchange',message:'before quickstart',data:{step:'quickstart'},timestamp:Date.now(),hypothesisId:'H2'})}).catch(()=>{});
+      // #endregion
       console.log('[auth] Running quickstart...');
       const quickstart = await quickstartAgent(loginResponse.tokens.accessToken, quickstartPayload);
 
@@ -60,6 +69,11 @@ export function usePrivyAgentAuth() {
       console.log('[auth] Sign-in complete');
     } catch (err: unknown) {
       const message = getApiErrorMessage(err);
+      // #region agent log
+      const ax = err && typeof err === 'object' && 'isAxiosError' in err ? err as { response?: { status?: number; data?: unknown } } : null;
+      const step = ax?.response ? (ax.response.status === 500 ? 'unknown_500' : 'unknown') : 'non_axios';
+      fetch('http://127.0.0.1:7245/ingest/3b42d969-38a3-41ef-acb2-0b0d1db5bbe4',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'usePrivyAgentAuth.ts:runExchange',message:'exchange failed',data:{step,status:ax?.response?.status,errorBody:ax?.response?.data,message},timestamp:Date.now(),hypothesisId:'H3'})}).catch(()=>{});
+      // #endregion
       console.error('[auth] Exchange failed:', message);
       setError(message);
     } finally {

@@ -282,8 +282,15 @@ export async function updateEpochMetrics(prisma: any) {
     if (activeEpoch) {
       usdcPoolSize.set(parseFloat(activeEpoch.usdcPool.toString()));
     }
-  } catch (error) {
-    console.error('Failed to update epoch metrics:', error);
+  } catch (error: unknown) {
+    const msg = error instanceof Error ? error.message : String(error);
+    if (msg.includes('does not exist') && msg.includes('scanner_epochs')) {
+      console.warn(
+        'Epoch metrics skipped: table scanner_epochs is missing. Create it with: cd backend && (bunx prisma db push || npx prisma db push)'
+      );
+    } else {
+      console.error('Failed to update epoch metrics:', error);
+    }
   }
 }
 

@@ -66,22 +66,28 @@ db-studio: ## Open Prisma Studio (database GUI)
 # Backend port (should match backend/.env.local PORT)
 BACKEND_PORT ?= 3002
 
-dev: ## Start all services in development mode
+dev: install-deps ## Start all services in development mode (runs install-deps if node_modules missing)
 	@echo "$(BLUE)Starting development servers...$(NC)"
 	@echo "$(YELLOW)Backend: http://localhost:$(BACKEND_PORT)$(NC)"
 	@echo "$(YELLOW)Web: http://localhost:3000$(NC)"
 	@echo "$(YELLOW)Press Ctrl+C to stop all services$(NC)"
 	@make -j3 dev-backend dev-web dev-mobile || true
 
+# Ensure backend/web/mobile have node_modules so next, tsx, expo are available (no DB changes)
+install-deps:
+	@if [ ! -d backend/node_modules ]; then echo "$(YELLOW)Installing backend deps...$(NC)" && cd backend && (command -v bun >/dev/null 2>&1 && bun install || npm install); fi
+	@if [ ! -d web/node_modules ]; then echo "$(YELLOW)Installing web deps...$(NC)" && cd web && npm install; fi
+	@if [ ! -d mobile/node_modules ]; then echo "$(YELLOW)Installing mobile deps...$(NC)" && cd mobile && npm install; fi
+
 dev-backend: ## Start backend server only (uses npm run dev:node if Bun not installed)
 	@echo "$(BLUE)Starting backend...$(NC)"
 	@lsof -ti:$(BACKEND_PORT) 2>/dev/null | xargs kill -9 2>/dev/null || true
-	@cd backend && (command -v bun >/dev/null 2>&1 && bun run dev || npm run dev:node)
+	@cd backend && (command -v bun >/dev/null 2>&1 && bun run dev || npx tsx watch src/index.ts)
 
 dev-web: ## Start web frontend only (removes stale Next dev lock so make dev can restart cleanly)
 	@echo "$(BLUE)Starting web frontend...$(NC)"
 	@rm -f web/.next/dev/lock 2>/dev/null || true
-	@cd web && npm run dev
+	@cd web && npx next dev
 
 dev-mobile: ## Start mobile app (Expo)
 	@echo "$(BLUE)Starting mobile app...$(NC)"

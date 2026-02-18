@@ -37,6 +37,9 @@ const quickstartLimiter = rateLimiter({
 
 // POST /auth/login
 auth.post('/login', async (c) => {
+  // #region agent log
+  fetch('http://127.0.0.1:7245/ingest/3b42d969-38a3-41ef-acb2-0b0d1db5bbe4',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'auth.ts:POST /login',message:'login handler entered',data:{route:'login'},timestamp:Date.now(),hypothesisId:'H1'})}).catch(()=>{});
+  // #endregion
   try {
     const body = await c.req.json();
     const { privyToken } = loginSchema.parse(body);
@@ -62,6 +65,11 @@ auth.post('/login', async (c) => {
       );
     }
 
+    // #region agent log
+    const errMsg = error instanceof Error ? error.message : String(error);
+    const errName = error instanceof Error ? error.constructor.name : 'unknown';
+    fetch('http://127.0.0.1:7245/ingest/3b42d969-38a3-41ef-acb2-0b0d1db5bbe4',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'auth.ts:POST /login',message:'login error caught',data:{route:'login',errorMessage:errMsg,errorName:errName},timestamp:Date.now(),hypothesisId:'H1'})}).catch(()=>{});
+    // #endregion
     console.error('Login error:', error);
     return c.json(
       {
@@ -131,6 +139,9 @@ auth.get('/me', authMiddleware, async (c) => {
 
 // POST /auth/agent/quickstart (protected) — one-click agent setup for regular users
 auth.post('/agent/quickstart', authMiddleware, quickstartLimiter, async (c) => {
+  // #region agent log
+  fetch('http://127.0.0.1:7245/ingest/3b42d969-38a3-41ef-acb2-0b0d1db5bbe4',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'auth.ts:POST /agent/quickstart',message:'quickstart handler entered',data:{route:'quickstart'},timestamp:Date.now(),hypothesisId:'H2'})}).catch(()=>{});
+  // #endregion
   try {
     const user = c.get('user');
     const userId = c.get('userId');
@@ -176,6 +187,11 @@ auth.post('/agent/quickstart', authMiddleware, quickstartLimiter, async (c) => {
       );
     }
 
+    // #region agent log
+    const errMsg = error instanceof Error ? error.message : String(error);
+    const errName = error instanceof Error ? error.constructor.name : 'unknown';
+    fetch('http://127.0.0.1:7245/ingest/3b42d969-38a3-41ef-acb2-0b0d1db5bbe4',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'auth.ts:POST /agent/quickstart',message:'quickstart error caught',data:{route:'quickstart',errorMessage:errMsg,errorName:errName},timestamp:Date.now(),hypothesisId:'H2'})}).catch(()=>{});
+    // #endregion
     console.error('Quickstart error:', error);
     return c.json(
       {

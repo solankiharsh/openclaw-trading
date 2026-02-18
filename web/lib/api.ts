@@ -45,8 +45,15 @@ export function getApiErrorMessage(err: unknown): string {
   if (err && typeof err === 'object' && 'isAxiosError' in err) {
     const ax = err as { message?: string; code?: string; response?: { status?: number; data?: unknown } };
     if (ax.response?.status) {
-      const data = ax.response.data as { message?: string } | undefined;
-      return data?.message || `Server error (${ax.response.status})`;
+      const data = ax.response.data as { message?: string; error?: { message?: string } } | undefined;
+      const serverMessage = data?.error?.message ?? data?.message;
+      if (serverMessage) {
+        if (/does not exist in the current database/i.test(serverMessage)) {
+          return 'Database schema is out of date. The app admin needs to run database migrations (e.g. prisma db push).';
+        }
+        return serverMessage;
+      }
+      return `Server error (${ax.response.status})`;
     }
     if (ax.message === 'Network Error' || ax.code === 'ERR_NETWORK') {
       return 'Cannot reach the API. Is the backend running? For local dev use NEXT_PUBLIC_API_URL=http://localhost:3001. For production set it to your deployed API URL.';
