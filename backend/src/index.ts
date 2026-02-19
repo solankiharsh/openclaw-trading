@@ -91,6 +91,8 @@ const allowedOrigins = [
   'https://web-production-564c3.up.railway.app',
   'https://solharsh.com',
   'https://www.solharsh.com',
+  'https://openclaw.xyz',
+  'https://www.openclaw.xyz',
   'https://superclaw.xyz',
   'https://www.superclaw.xyz',
   'https://superclaw.app',

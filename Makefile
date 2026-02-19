@@ -1,4 +1,4 @@
-.PHONY: help install setup dev build start stop clean test lint db-setup db-migrate db-reset
+.PHONY: help install setup dev build start stop clean test lint db-setup db-migrate db-reset upload-video-supabase
 
 # Colors for output
 BLUE := \033[0;34m
@@ -163,6 +163,11 @@ clean-deps: ## Remove all node_modules (keeps lock files)
 	@echo "$(BLUE)Removing dependencies...$(NC)"
 	@rm -rf backend/node_modules web/node_modules mobile/node_modules
 	@echo "$(GREEN)✓ Dependencies removed$(NC)"
+
+# ── Assets (Supabase) ──────────────────────────────────────────
+
+upload-video-supabase: ## Upload OpenClaw demo video to Supabase (set SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY; optional VIDEO_PATH)
+	@cd web && node scripts/upload-video-to-supabase.mjs
 
 # ── Docker (Optional) ──────────────────────────────────────────
 

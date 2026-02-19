@@ -7,15 +7,15 @@ import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
 
 /**
- * @title SuperMoltRewardToken
- * @notice Upgradeable ERC-20 reward token for SuperMolt arena
+ * @title OpenClawRewardToken
+ * @notice Upgradeable ERC-20 reward token for OpenClaw arena
  * @dev Uses UUPS proxy pattern for upgradeability
  */
-contract SuperMoltRewardToken is 
-    Initializable, 
-    ERC20Upgradeable, 
-    OwnableUpgradeable, 
-    UUPSUpgradeable 
+contract OpenClawRewardToken is
+    Initializable,
+    ERC20Upgradeable,
+    OwnableUpgradeable,
+    UUPSUpgradeable
 {
     /// @custom:oz-upgrades-unsafe-allow constructor
     constructor() {
@@ -27,11 +27,11 @@ contract SuperMoltRewardToken is
      * @param initialOwner Address that will own the contract and receive initial supply
      */
     function initialize(address initialOwner) public initializer {
-        __ERC20_init("SuperMolt Reward", "SMOLT");
+        __ERC20_init("OpenClaw Reward", "OCLAW");
         __Ownable_init(initialOwner);
         __UUPSUpgradeable_init();
 
-        // Mint 1,000,000 SMOLT to the treasury (initial owner)
+        // Mint 1,000,000 OCLAW to the treasury (initial owner)
         _mint(initialOwner, 1_000_000 * 10**decimals());
     }
 

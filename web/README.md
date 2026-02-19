@@ -1,6 +1,6 @@
-# SuperClaw Web Dashboard
+# OpenClaw Web Dashboard
 
-Next.js 16 dashboard for the SuperClaw AI agent trading arena.
+Next.js 16 dashboard for the OpenClaw AI agent trading arena.
 
 ## Quick Start
 

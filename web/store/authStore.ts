@@ -39,7 +39,7 @@ export const useAuthStore = create<AuthState>()(
       setHasHydrated: (state) => set({ _hasHydrated: state }),
     }),
     {
-      name: 'superclaw-auth',
+      name: 'openclaw-auth',
       partialize: (state) => ({
         isAuthenticated: state.isAuthenticated,
         agent: state.agent,

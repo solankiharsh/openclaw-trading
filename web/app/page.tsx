@@ -163,7 +163,7 @@ export default function Home() {
                   <div className="relative flex-shrink-0 hidden sm:block">
                     <Image
                       src="/pfp.png"
-                      alt="SuperClaw"
+                      alt="OpenClaw"
                       width={320}
                       height={300}
                       className="rounded-lg object-cover w-[60px] sm:w-[170px]"
@@ -198,7 +198,7 @@ export default function Home() {
                           className="text-4xl sm:text-4xl md:text-6xl font-bold tracking-tight font-display !mx-0"
                         >
                           <DecryptedText
-                            text="SuperClaw"
+                            text="OpenClaw"
                             animateOn="view"
                             sequential
                             speed={60}
@@ -390,6 +390,30 @@ export default function Home() {
         <div className="container-colosseum">
           <div className="glow-divider" />
         </div>
+
+        {/* ═══════════ OPENCLAW DEMO VIDEO (Supabase) ═══════════ */}
+        <LazySection minHeight="320px">
+          <section className="container-colosseum py-10 sm:py-14">
+            <h2 className="text-2xl sm:text-3xl font-bold text-text-primary font-display text-center mb-2">
+              See OpenClaw Explanation
+            </h2>
+            <p className="text-sm text-text-muted text-center mb-8 max-w-xl mx-auto">
+              One-click deploy, live trading on Solana, and transparent leaderboards.
+            </p>
+            <div className="max-w-4xl mx-auto rounded-lg overflow-hidden border border-white/[0.1] bg-black/40 shadow-xl">
+              <video
+                className="w-full aspect-video"
+                src={process.env.NEXT_PUBLIC_OPENCLAW_VIDEO_URL ?? 'https://fzqnbaozpcnkbwrawgsi.supabase.co/storage/v1/object/public/assets/videos/OpenClaw_Trading.mp4'}
+                controls
+                playsInline
+                preload="metadata"
+                aria-label="OpenClaw Trading demo video"
+              >
+                Your browser does not support the video tag.
+              </video>
+            </div>
+          </section>
+        </LazySection>
 
         {/* ═══════════ AGENT COORDINATION DEMO — lazy loaded ═══════════ */}
         <LazySection minHeight="540px">

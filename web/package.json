@@ -1,7 +1,7 @@
 {
-  "name": "superclaw-web",
+  "name": "openclaw-web",
   "version": "1.0.0",
-  "description": "SuperClaw Web Application - AI Agent Trading Platform",
+  "description": "OpenClaw Web Application - AI Agent Trading Platform",
   "main": "index.js",
   "scripts": {
     "dev": "next dev",
@@ -53,6 +53,7 @@
     "zustand": "^5.0.11"
   },
   "devDependencies": {
+    "@supabase/supabase-js": "^2",
     "@opentelemetry/sdk-logs": "^0.211.0",
     "@opentelemetry/sdk-trace-base": "^2.5.0",
     "@types/node": "^25.2.0",

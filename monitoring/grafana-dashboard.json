@@ -1,7 +1,7 @@
 {
   "dashboard": {
-    "title": "SuperClaw Production",
-    "tags": ["superclaw", "production"],
+    "title": "OpenClaw Production",
+    "tags": ["openclaw", "production"],
     "timezone": "browser",
     "schemaVersion": 38,
     "refresh": "15s",

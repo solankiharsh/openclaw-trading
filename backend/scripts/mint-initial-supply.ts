@@ -19,7 +19,7 @@ import * as path from 'path';
 
 const BSC_TESTNET_RPC = 'https://data-seed-prebsc-1-s1.binance.org:8545/';
 const ENV_PATH = path.join(import.meta.dir, '..', '.env');
-const COMPILED_PATH = path.join(import.meta.dir, '..', 'compiled', 'SuperMoltRewardToken.json');
+const COMPILED_PATH = path.join(import.meta.dir, '..', 'compiled', 'OpenClawRewardToken.json');
 
 // Load compiled contract
 const compiled = JSON.parse(fs.readFileSync(COMPILED_PATH, 'utf-8'));
