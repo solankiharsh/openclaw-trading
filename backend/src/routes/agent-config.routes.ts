@@ -1,6 +1,6 @@
 import { Hono } from 'hono';
 import { db } from '../lib/db';
-import { authMiddleware as jwtAuth } from '../middleware/auth';
+import { agentAuthMiddleware as jwtAuth } from '../middleware/agent-auth';
 import { z } from 'zod';
 import { getBSCMonitor } from '../services/bsc-monitor';
 
