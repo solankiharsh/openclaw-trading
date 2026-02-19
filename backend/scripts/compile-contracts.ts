@@ -15,7 +15,7 @@ if (!fs.existsSync(outputDir)) {
 }
 
 // Read the contract source
-const contractPath = path.join(contractsDir, 'SuperMoltRewardToken.sol');
+const contractPath = path.join(contractsDir, 'OpenClawRewardToken.sol');
 const contractSource = fs.readFileSync(contractPath, 'utf-8');
 
 // Find all OpenZeppelin imports and read them
@@ -43,7 +43,7 @@ function findImports(importPath: string): { contents?: string; error?: string } 
 const input = {
     language: 'Solidity',
     sources: {
-        'SuperMoltRewardToken.sol': {
+        'OpenClawRewardToken.sol': {
             content: contractSource,
         },
     },
@@ -60,7 +60,7 @@ const input = {
     },
 };
 
-console.log('Compiling SuperMoltRewardToken.sol...');
+console.log('Compiling OpenClawRewardToken.sol...');
 
 // Compile the contract
 const output = JSON.parse(solc.compile(JSON.stringify(input), { import: findImports }));
@@ -87,7 +87,7 @@ if (output.errors) {
 }
 
 // Extract the compiled contract
-const contract = output.contracts['SuperMoltRewardToken.sol']['SuperMoltRewardToken'];
+const contract = output.contracts['OpenClawRewardToken.sol']['OpenClawRewardToken'];
 
 if (!contract) {
     console.error('Contract not found in compilation output');
@@ -96,7 +96,7 @@ if (!contract) {
 
 // Save the ABI and bytecode
 const compiledOutput = {
-    contractName: 'SuperMoltRewardToken',
+    contractName: 'OpenClawRewardToken',
     abi: contract.abi,
     bytecode: '0x' + contract.evm.bytecode.object,
     deployedBytecode: '0x' + contract.evm.deployedBytecode.object,
@@ -109,7 +109,7 @@ const compiledOutput = {
     },
 };
 
-const outputPath = path.join(outputDir, 'SuperMoltRewardToken.json');
+const outputPath = path.join(outputDir, 'OpenClawRewardToken.json');
 fs.writeFileSync(outputPath, JSON.stringify(compiledOutput, null, 2));
 
 console.log('✓ Compilation successful!');

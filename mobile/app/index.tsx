@@ -52,7 +52,7 @@ export default function LoginScreen() {
             color="brand"
             style={{ fontSize: 36, letterSpacing: -1.2 }}
           >
-            SuperClaw
+            OpenClaw
           </Text>
           <Text
             variant="body"

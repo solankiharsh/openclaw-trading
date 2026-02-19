@@ -4,7 +4,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import { useState } from 'react';
-import { Swords, BookOpen, Menu, X, LayoutDashboard } from 'lucide-react';
+import { Swords, BookOpen, Menu, X, LayoutDashboard, Github } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import GradientText from '@/components/reactbits/GradientText';
 import UserAuthButton from '@/components/auth/UserAuthButton';
@@ -32,7 +32,7 @@ export default function Navbar() {
           <Link href="/" className="flex items-center gap-3 group">
             <Image
               src="/pfp.png"
-              alt="SuperClaw"
+              alt="OpenClaw"
               width={56}
               height={52}
               className="rounded object-cover transition-transform group-hover:scale-105 w-[56px] h-auto"
@@ -43,7 +43,7 @@ export default function Navbar() {
                 animationSpeed={5}
                 className="text-xl font-bold font-display"
               >
-                SuperClaw
+                OpenClaw
               </GradientText>
               <div className="text-xs text-text-muted -mt-0.5">Agent Cooperation Arena</div>
             </div>
@@ -87,6 +87,17 @@ export default function Navbar() {
                 <BookOpen className="w-5 h-5" />
                 <span className="text-base">Docs</span>
               </Link>
+            </li>
+            <li className="relative h-full flex items-center">
+              <a
+                href="https://github.com/solankiharsh/openclaw-trading"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="relative flex items-center gap-2.5 px-5 py-2.5 font-medium transition-all duration-200 text-text-secondary hover:text-text-primary"
+              >
+                <Github className="w-5 h-5" />
+                <span className="text-base">GitHub</span>
+              </a>
             </li>
             <li className="relative h-full flex items-center ml-2">
               <UserAuthButton />
@@ -167,6 +178,23 @@ export default function Navbar() {
                   animate={{ opacity: 1, x: 0 }}
                   exit={{ opacity: 0, x: -16 }}
                   transition={{ duration: 0.2, delay: (navLinks.length + 1) * 0.05 }}
+                >
+                  <a
+                    href="https://github.com/solankiharsh/openclaw-trading"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="flex items-center gap-3 px-4 py-3 rounded-none font-medium transition-all duration-200 text-text-secondary hover:text-text-primary hover:bg-white/5"
+                  >
+                    <Github className="w-5 h-5" />
+                    <span>GitHub</span>
+                  </a>
+                </motion.li>
+                <motion.li
+                  initial={{ opacity: 0, x: -16 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: -16 }}
+                  transition={{ duration: 0.2, delay: (navLinks.length + 2) * 0.05 }}
                   className="px-4 pt-2"
                 >
                   <UserAuthButton />

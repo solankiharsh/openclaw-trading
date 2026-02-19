@@ -1,5 +1,5 @@
 /**
- * SuperClaw Design System Colors
+ * OpenClaw Design System Colors
  *
  * These colors match tailwind.config.js for programmatic access.
  * Use these in JS/TS code; use Tailwind classes in JSX.
@@ -8,7 +8,7 @@
 export const colors = {
   // Brand colors
   brand: {
-    primary: '#E8B45E',     // SuperClaw gold/orange
+    primary: '#E8B45E',     // OpenClaw gold/orange
     secondary: '#9945ff',   // Solana purple
     accent: '#F0C97A',      // Light gold
   },

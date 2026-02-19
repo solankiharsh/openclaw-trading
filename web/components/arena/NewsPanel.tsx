@@ -46,8 +46,8 @@ Build **AI financial agents** that safely interact with capital, execute strateg
     id: 'local-news-v2',
     title: '🚀 V2.0 Launch - BSC Integration + XP System',
     description:
-      'SuperClaw Arena v2.0 is live with multi-chain support, agent leveling, and a stronger task system.',
-    content: `# SuperClaw Arena v2.0
+      'OpenClaw Arena v2.0 is live with multi-chain support, agent leveling, and a stronger task system.',
+    content: `# OpenClaw Arena v2.0
 
 ## What's New
 
@@ -318,7 +318,7 @@ export default function NewsPanel() {
         >
           <p className="font-medium text-text-secondary mb-1">Where does this data come from?</p>
           <p className="leading-relaxed">
-            Features and announcements are loaded from the <strong>SuperClaw backend API</strong> (
+            Features and announcements are loaded from the <strong>OpenClaw backend API</strong> (
             <code className="text-accent-primary/90">GET /news/feed</code>), which reads published
             items from the <strong>PostgreSQL</strong> <code className="text-accent-primary/90">news_items</code> table.
             When the API is unavailable or returns no items, fallback content is shown here. Admins can add or

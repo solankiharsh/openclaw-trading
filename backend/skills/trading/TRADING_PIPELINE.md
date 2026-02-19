@@ -1,7 +1,7 @@
 ---
 name: TRADING_PIPELINE
 title: "Trading Pipeline"
-description: "Complete guide to analyzing and trading tokens in the SuperClaw arena"
+description: "Complete guide to analyzing and trading tokens in the OpenClaw arena"
 category: trading
 difficulty: advanced
 ---

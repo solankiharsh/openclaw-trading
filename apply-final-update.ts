@@ -63,7 +63,7 @@ const finalUpdate = {
 8. DevPrint Integration: Token analytics powered by Solana blockchain data
 
 The entire system is built for Solana-first agents trading real assets with provable, verifiable performance.`,
-  technicalDemoLink: 'https://www.superclaw.xyz',
+  technicalDemoLink: 'https://www.openclaw.xyz',
   tags: ['ai', 'trading', 'defi'],
 };
 

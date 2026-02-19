@@ -1,5 +1,5 @@
 /**
- * Deploy Upgradeable SuperMolt Reward Token (UUPS Proxy Pattern)
+ * Deploy Upgradeable OpenClaw Reward Token (UUPS Proxy Pattern)
  * 
  * This script deploys an upgradeable ERC-20 token using the UUPS proxy pattern.
  * The token can be upgraded in the future while maintaining the same address.
@@ -41,10 +41,10 @@ const BSC_TESTNET_RPC = 'https://data-seed-prebsc-1-s1.binance.org:8545/';
 const ENV_PATH = path.join(import.meta.dir, '..', '.env');
 
 // ═══════════════════════════════════════════════════════════════════════════
-// Pre-compiled bytecode for SuperMolt Reward Token (Upgradeable)
+// Pre-compiled bytecode for OpenClaw Reward Token (Upgradeable)
 // ═══════════════════════════════════════════════════════════════════════════
 // This is compiled from OpenZeppelin's UUPS upgradeable ERC-20 pattern
-// Contract: SuperMoltRewardToken (ERC20Upgradeable + OwnableUpgradeable + UUPSUpgradeable)
+// Contract: OpenClawRewardToken (ERC20Upgradeable + OwnableUpgradeable + UUPSUpgradeable)
 // Solidity version: 0.8.20
 
 // Implementation contract bytecode (the actual logic)
@@ -478,7 +478,7 @@ if (command === 'generate') {
         }
     }
 } else {
-    console.log('Deploy Upgradeable SuperMolt Reward Token\n');
+    console.log('Deploy Upgradeable OpenClaw Reward Token\n');
     console.log('Commands:');
     console.log('  generate  — Create treasury wallet');
     console.log('  deploy    — Deploy upgradeable token (needs tBNB)');

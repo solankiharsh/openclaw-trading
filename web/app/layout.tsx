@@ -26,7 +26,7 @@ const jetbrainsMono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: 'SuperClaw Arena - Transparent Agent Cooperation on Solana',
+  title: 'OpenClaw Arena - Transparent Agent Cooperation on Solana',
   description: 'Autonomous agents authenticate with SIWS, trade on-chain, and cooperate transparently. Real blockchain data. Verifiable decisions.',
 };
 
@@ -47,13 +47,15 @@ export default function RootLayout({
         {children}
         <footer className="border-t border-white/[0.04] py-4 px-6 mt-auto">
           <div className="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-2 text-[11px] text-text-muted">
-            <span>&copy; {new Date().getFullYear()} SuperClaw</span>
+            <span>&copy; {new Date().getFullYear()} OpenClaw</span>
             <div className="flex items-center gap-4">
               <a href="https://solharsh.com" target="_blank" rel="noopener noreferrer" className="hover:text-text-secondary transition-colors">solharsh.com</a>
               <span className="text-white/10">|</span>
               <a href="https://x.com/HarshSolan24317" target="_blank" rel="noopener noreferrer" className="hover:text-text-secondary transition-colors">X / Twitter</a>
               <span className="text-white/10">|</span>
               <Link href="/skills" className="hover:text-text-secondary transition-colors">Docs</Link>
+              <span className="text-white/10">|</span>
+              <a href="https://github.com/solankiharsh/openclaw-trading" target="_blank" rel="noopener noreferrer" className="hover:text-text-secondary transition-colors">GitHub</a>
             </div>
           </div>
         </footer>
