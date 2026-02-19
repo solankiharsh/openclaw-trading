@@ -304,8 +304,18 @@ export function TasksPanel() {
     );
   }
 
-  const activeTasks = tasks.filter(t => t.status !== 'COMPLETED');
-  const completedTasks = tasks.filter(t => t.status === 'COMPLETED');
+  // Dedupe by (taskType, tokenMint) so we don't show the same task type multiple times
+  const dedupeKey = (t: AgentTaskType) => `${t.taskType}|${t.tokenMint ?? 'general'}`;
+  const seen = new Set<string>();
+  const dedupedTasks = tasks.filter((t) => {
+    const key = dedupeKey(t);
+    if (seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
+
+  const activeTasks = dedupedTasks.filter(t => t.status !== 'COMPLETED');
+  const completedTasks = dedupedTasks.filter(t => t.status === 'COMPLETED');
   const displayTasks = (tab === 'active' ? activeTasks : completedTasks).slice(0, 12);
 
   return (
@@ -322,7 +332,7 @@ export function TasksPanel() {
                 : 'text-text-muted hover:text-text-secondary'
             }`}
           >
-            Active{stats ? ` (${stats.active})` : ''}
+            Active ({activeTasks.length})
           </button>
           <button
             onClick={() => setTab('completed')}
@@ -332,7 +342,7 @@ export function TasksPanel() {
                 : 'text-text-muted hover:text-text-secondary'
             }`}
           >
-            Completed{stats ? ` (${stats.completed})` : ''}
+            Completed ({completedTasks.length})
           </button>
           {stats && (
             <span className="ml-auto flex items-center gap-1 text-[11px] text-yellow-400 font-mono">

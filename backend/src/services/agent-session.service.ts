@@ -2,7 +2,7 @@ import * as jwt from 'jose';
 import { db } from '../lib/db';
 import { getArchetype } from '../lib/archetypes';
 import { generateUniqueName } from '../lib/name-generator';
-import { createOnboardingTasks } from './onboarding.service';
+import { createOnboardingTasks, autoCompleteOnboardingTask } from './onboarding.service';
 
 const JWT_SECRET = process.env.JWT_SECRET;
 const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN || '15m';
@@ -153,6 +153,13 @@ export async function getOrCreateQuickstartAgent(options: {
         where: { id: existing.id },
         data: updates,
       });
+      // If we just set twitterHandle from Privy login, auto-complete LINK_TWITTER onboarding task
+      if (updates.twitterHandle) {
+        autoCompleteOnboardingTask(existing.id, 'LINK_TWITTER', { twitterHandle: updates.twitterHandle }).catch(() => {});
+      }
+    } else if (options.twitterUsername && existing.twitterHandle) {
+      // Agent already had Twitter (e.g. from previous login); ensure LINK_TWITTER is completed on this login
+      autoCompleteOnboardingTask(existing.id, 'LINK_TWITTER', { twitterHandle: existing.twitterHandle }).catch(() => {});
     }
 
     await ensureOnboardingForAgent(existing.id);
@@ -201,6 +208,10 @@ export async function getOrCreateQuickstartAgent(options: {
   });
 
   await ensureOnboardingForAgent(agent.id);
+  // If agent was created with Twitter from Privy, auto-complete LINK_TWITTER onboarding task
+  if (options.twitterUsername) {
+    autoCompleteOnboardingTask(agent.id, 'LINK_TWITTER', { twitterHandle: `@${options.twitterUsername}` }).catch(() => {});
+  }
   await ensureScannerForAgent({
     agentId: agent.id,
     agentName: agent.name,

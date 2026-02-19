@@ -425,6 +425,24 @@ try {
   console.error('⚠️  Server will continue without WebSocket support');
 }
 
+// Seed demo research tasks if no token-based tasks exist (so new deployments show tasks)
+async function seedDemoTasksIfEmpty() {
+  try {
+    const onboardingTypes = ['LINK_TWITTER', 'FIRST_TRADE', 'COMPLETE_RESEARCH', 'UPDATE_PROFILE', 'JOIN_CONVERSATION'];
+    const count = await db.agentTask.count({
+      where: { taskType: { notIn: onboardingTypes } },
+    });
+    if (count === 0) {
+      const { AgentTaskManager } = await import('./services/agent-task-manager.service.js');
+      const mgr = new AgentTaskManager();
+      await mgr.createTasksForToken('So11111111111111111111111111111111111111112', 'SOL');
+      console.log('✅ Seeded demo research tasks for SOL');
+    }
+  } catch (err) {
+    console.error('❌ Seed demo tasks failed:', err);
+  }
+}
+
 // Start the server
 server.listen(port, '0.0.0.0', () => {
   console.log(`✅ Server running on port ${port}`);
@@ -432,6 +450,7 @@ server.listen(port, '0.0.0.0', () => {
   console.log(`   WebSocket: ws://0.0.0.0:${port}`);
   console.log(`   Socket.IO: ws://0.0.0.0:${port}/socket.io/`);
   console.log(`   Ready for connections`);
+  seedDemoTasksIfEmpty();
 });
 
 // Start DevPrint feed service (market intelligence relay)
