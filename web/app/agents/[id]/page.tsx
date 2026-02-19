@@ -318,7 +318,7 @@ export default function AgentProfilePage({ params }: { params: { id: string } })
                         borderRadius: '4px',
                       }}
                     />
-                    <Line type="monotone" dataKey="cumulativePnL" stroke="#E8B45E" strokeWidth={2} dot={false} />
+                    <Line type="monotone" dataKey="cumulativePnL" stroke="#6366f1" strokeWidth={2} dot={false} />
                   </LineChart>
                 </ResponsiveContainer>
               </div>

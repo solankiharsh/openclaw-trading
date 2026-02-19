@@ -1,42 +1,46 @@
 'use client';
 
 import { useEffect, useState, useCallback } from 'react';
-import { ExternalLink, ChevronRight } from 'lucide-react';
+import { ExternalLink, ChevronRight, Info } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { NewsItem } from '@/lib/types';
+import { getNewsFeed } from '@/lib/api';
 import NewsModal from './NewsModal';
 
 const FALLBACK_IMAGE = '/bg.png';
+const LABLAB_HACKATHON_URL = 'https://lablab.ai/ai-hackathons/ai-trading-agents-erc-8004';
+const DEMO_WEB_URL = 'https://openclaw-trading-d3yx.vercel.app/';
+const DEMO_API_URL = 'https://web-production-564c3.up.railway.app';
+
 const FALLBACK_NEWS_ITEMS: NewsItem[] = [
   {
-    id: 'local-news-hackathon',
-    title: '🏆 SuperClaw Competing in USDC Hackathon',
+    id: 'local-news-erc8004',
+    title: '🤖 AI Trading Agents with ERC-8004 Hackathon',
     description:
-      "We're competing in the USDC Agentic Commerce Hackathon with our multi-chain AI trading platform.",
-    content: `# SuperClaw @ USDC Hackathon
+      'Build trustless AI financial agents with ERC-8004. $50K prize pool, March 9–22, 2026. Identity, reputation & validation on-chain.',
+    content: `# AI Trading Agents with ERC-8004 Hackathon
 
-## What We Built
+Build **AI financial agents** that safely interact with capital, execute strategies on-chain, and prove behavior using **ERC-8004** (identity, reputation, validation).
 
-SuperClaw Arena is a multi-chain trading infrastructure where autonomous AI agents earn USDC rewards based on on-chain performance.
+## Event
 
-### Highlights
+- **When:** March 9–22, 2026 (13 days)
+- **Prize pool:** $50,000 USDC
+- **Focus:** Trustless trading agents, risk-adjusted returns, validation quality
 
-- Solana + BSC support
-- Weekly epoch rewards in USDC
-- XP and task system for agents
-- Open strategy coordination and voting
+## Demo & API
 
-## Links
+- **Demo:** [openclaw-trading-d3yx.vercel.app](${DEMO_WEB_URL})
+- **API:** [web-production-564c3.up.railway.app](${DEMO_API_URL})
 
-- Demo: [trench-terminal-omega.vercel.app](https://trench-terminal-omega.vercel.app)
-- API: [sr-mobile-production.up.railway.app](https://sr-mobile-production.up.railway.app)`,
-    imageUrl: 'https://via.placeholder.com/1200x400/1a1a2e/3B82F6?text=USDC+Hackathon',
-    ctaText: 'View Submission',
-    ctaType: 'MODAL',
-    ctaUrl: null,
+[Enroll and learn more →](${LABLAB_HACKATHON_URL})`,
+    imageUrl: 'https://via.placeholder.com/1200x400/1a1a2e/6366f1?text=ERC-8004+Hackathon',
+    ctaText: 'View Hackathon',
+    ctaType: 'EXTERNAL_LINK',
+    ctaUrl: LABLAB_HACKATHON_URL,
     category: 'EVENT',
     priority: 100,
-    publishedAt: '2026-02-10T19:17:59.031Z',
+    publishedAt: '2026-02-19T00:00:00.000Z',
   },
   {
     id: 'local-news-v2',
@@ -50,7 +54,12 @@ SuperClaw Arena is a multi-chain trading infrastructure where autonomous AI agen
 - BSC integration and cross-chain arena experience
 - Agent XP + level progression
 - Improved token research task flows
-- Better reward visibility and leaderboard depth`,
+- Better reward visibility and leaderboard depth
+
+## Links
+
+- **Demo:** [openclaw-trading-d3yx.vercel.app](${DEMO_WEB_URL})
+- **API:** [web-production-564c3.up.railway.app](${DEMO_API_URL})`,
     imageUrl: 'https://via.placeholder.com/1200x400/1a1a2e/10B981?text=V2.0+Launch',
     ctaText: "See What's New",
     ctaType: 'MODAL',
@@ -90,8 +99,39 @@ export default function NewsPanel() {
   const [isPaused, setIsPaused] = useState(false);
   const [selectedNewsId, setSelectedNewsId] = useState<string | null>(null);
   const [selectedNewsItem, setSelectedNewsItem] = useState<NewsItem | null>(null);
+  const [dataSource, setDataSource] = useState<'api' | 'fallback'>('fallback');
+  const [showDataSourceInfo, setShowDataSourceInfo] = useState(false);
 
-
+  // Load features & announcements: backend API (GET /news/feed) → merge with fallback so featured items always appear
+  useEffect(() => {
+    let cancelled = false;
+    const load = async () => {
+      try {
+        const apiItems = await getNewsFeed(10);
+        const list = Array.isArray(apiItems) ? apiItems : [];
+        if (!cancelled) {
+          const apiIds = new Set(list.map((i) => i.id));
+          const merged =
+            list.length > 0
+              ? [...list, ...FALLBACK_NEWS_ITEMS.filter((f) => !apiIds.has(f.id))]
+              : FALLBACK_NEWS_ITEMS;
+          setNewsItems(merged);
+          setDataSource(list.length > 0 ? 'api' : 'fallback');
+        }
+      } catch {
+        if (!cancelled) {
+          setNewsItems(FALLBACK_NEWS_ITEMS);
+          setDataSource('fallback');
+        }
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    };
+    load();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   // Auto-rotate every 5 seconds (unless paused)
   useEffect(() => {
@@ -132,8 +172,22 @@ export default function NewsPanel() {
 
   return (
     <>
+      <div className="max-w-md space-y-1">
+        <div className="flex items-center justify-between gap-2 px-0.5">
+          <span className="text-xs font-medium text-text-muted uppercase tracking-wider">
+            Features &amp; announcements
+          </span>
+          <button
+            type="button"
+            onClick={() => setShowDataSourceInfo((v) => !v)}
+            className="p-1 rounded text-text-muted hover:text-text-secondary hover:bg-white/5 transition-colors"
+            aria-label="Where does this data come from?"
+          >
+            <Info className="w-3.5 h-3.5" />
+          </button>
+        </div>
       <div
-        className="relative overflow-hidden border border-white/[0.15] shadow-[inset_0_1px_0_rgba(255,255,255,0.08),0_8px_32px_rgba(0,0,0,0.4)] cursor-pointer transition-all duration-300 hover:border-accent-primary/40 hover:shadow-[inset_0_1px_0_rgba(59,130,246,0.1),0_8px_32px_rgba(59,130,246,0.2)] h-52 max-w-md"
+        className="relative overflow-hidden border border-white/[0.15] shadow-[inset_0_1px_0_rgba(255,255,255,0.08),0_8px_32px_rgba(0,0,0,0.4)] cursor-pointer transition-all duration-300 hover:border-accent-primary/40 hover:shadow-[inset_0_1px_0_rgba(99,102,241,0.2),0_8px_32px_rgba(99,102,241,0.2)] h-52 max-w-md"
         onMouseEnter={() => setIsPaused(true)}
         onMouseLeave={() => setIsPaused(false)}
         onClick={() => handleCTAClick(currentItem)}
@@ -229,7 +283,7 @@ export default function NewsPanel() {
                   }}
                   animate={{
                     height: index === currentIndex ? 24 : 6,
-                    backgroundColor: index === currentIndex ? 'rgb(59, 130, 246)' : 'rgba(255, 255, 255, 0.3)',
+                    backgroundColor: index === currentIndex ? '#6366f1' : 'rgba(255, 255, 255, 0.3)',
                     scale: index === currentIndex ? 1.1 : 1,
                   }}
                   whileHover={{
@@ -242,7 +296,7 @@ export default function NewsPanel() {
                   }}
                   className="w-1.5 rounded-full shadow-lg"
                   style={{
-                    boxShadow: index === currentIndex ? '0 0 10px rgba(59, 130, 246, 0.6)' : 'none'
+                    boxShadow: index === currentIndex ? '0 0 10px rgba(99, 102, 241, 0.5)' : 'none'
                   }}
                   aria-label={`Go to news item ${index + 1}`}
                 />
@@ -251,6 +305,32 @@ export default function NewsPanel() {
           )}
         </div>
       </div>
+
+      <AnimatePresence>
+      {showDataSourceInfo && (
+        <motion.div
+          key="data-source-info"
+          initial={{ opacity: 0, height: 0 }}
+          animate={{ opacity: 1, height: 'auto' }}
+          exit={{ opacity: 0, height: 0 }}
+          transition={{ duration: 0.2 }}
+          className="rounded border border-white/[0.08] bg-black/30 px-3 py-2 text-[11px] text-text-muted overflow-hidden"
+        >
+          <p className="font-medium text-text-secondary mb-1">Where does this data come from?</p>
+          <p className="leading-relaxed">
+            Features and announcements are loaded from the <strong>SuperClaw backend API</strong> (
+            <code className="text-accent-primary/90">GET /news/feed</code>), which reads published
+            items from the <strong>PostgreSQL</strong> <code className="text-accent-primary/90">news_items</code> table.
+            When the API is unavailable or returns no items, fallback content is shown here. Admins can add or
+            edit items by running the backend seed script (<code className="text-accent-primary/90">bun run scripts/seed-news.ts</code>)
+            or updating the database directly.
+          </p>
+          <p className="mt-1.5 text-white/50">
+            Current source: <span className={dataSource === 'api' ? 'text-emerald-400/90' : 'text-amber-400/90'}>{dataSource === 'api' ? 'Backend API' : 'Fallback content'}</span>
+          </p>
+        </motion.div>
+      )}
+      </AnimatePresence>
 
       {selectedNewsId && (
         <NewsModal
@@ -262,6 +342,7 @@ export default function NewsPanel() {
           }}
         />
       )}
+      </div>
     </>
   );
 }

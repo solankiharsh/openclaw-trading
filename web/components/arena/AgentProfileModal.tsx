@@ -108,7 +108,7 @@ export function AgentProfileModal({ agentId, onClose }: AgentProfileModalProps) 
       <div className="relative flex items-center justify-center h-full p-4 pointer-events-none">
         <div
           ref={panelRef}
-          className="w-full max-w-lg max-h-[85vh] overflow-y-auto scrollbar-custom pointer-events-auto bg-bg-primary border border-white/[0.08] shadow-[0_0_60px_-12px_rgba(232,180,94,0.15)]"
+          className="w-full max-w-lg max-h-[85vh] overflow-y-auto scrollbar-custom pointer-events-auto bg-bg-primary border border-white/[0.08] shadow-[0_0_60px_-12px_rgba(99,102,241,0.15)]"
           style={{
             opacity: 0,
             transform: 'scale(0.92) translateY(24px)',

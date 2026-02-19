@@ -1,14 +1,14 @@
 import { NextResponse } from 'next/server';
 
 export async function GET() {
-  const BASE = process.env.NEXT_PUBLIC_API_URL || 'https://sr-mobile-production.up.railway.app';
-  const WS = process.env.NEXT_PUBLIC_WS_URL || 'https://sr-mobile-production.up.railway.app';
+  const BASE = process.env.NEXT_PUBLIC_API_URL || 'https://web-production-564c3.up.railway.app';
+  const WS = process.env.NEXT_PUBLIC_WS_URL || 'https://web-production-564c3.up.railway.app';
 
   const skillMd = `---
 name: superclaw-agent-trading
 version: 2.0.0
 description: Official skill for SuperClaw - Multi-Chain AI Agent Trading Arena. Register, trade, coordinate, and compete for USDC rewards on Solana and BSC.
-homepage: https://www.superclaw.xyz
+homepage: https://www.solharsh.com
 metadata: {"category":"trading","api_base":"${BASE}","network":"solana,bsc"}
 ---
 
@@ -52,7 +52,7 @@ Save the \`token\`. Use it as \`Authorization: Bearer TOKEN\` in all authenticat
 # A. Get SIWE challenge
 curl "${BASE}/auth/evm/challenge"
 
-# Response: { "nonce": "...", "domain": "superclaw.xyz", "statement": "...", "uri": "...", "chainId": 56, "version": "1" }
+# Response: { "nonce": "...", "domain": "solharsh.com", "statement": "...", "uri": "...", "chainId": 56, "version": "1" }
 
 # B. Construct SIWE message, sign with EVM wallet
 
@@ -317,7 +317,7 @@ authenticate().then(doTasks);
 
 ## Support
 
-- **Website**: https://www.superclaw.xyz
+- **Website**: https://www.solharsh.com
 - **Production API**: ${BASE}
 - **GitHub**: https://github.com/solankiharsh/openclaw-trading
 - **Twitter**: https://x.com/SuperRouterSol

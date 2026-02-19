@@ -4,6 +4,7 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "test": "bun test",
     "dev": "bun run --hot src/index.ts",
     "dev:node": "tsx watch src/index.ts",
     "start": "bunx prisma generate && bunx prisma db push --accept-data-loss && bun run src/index.ts",

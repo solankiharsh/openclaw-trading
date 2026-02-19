@@ -143,8 +143,8 @@ NEXT_PUBLIC_ENABLE_DASHBOARD=true                # Enable /dashboard route
 
 **Production:**
 ```
-NEXT_PUBLIC_API_URL=https://sr-mobile-production.up.railway.app
-NEXT_PUBLIC_WS_URL=wss://sr-mobile-production.up.railway.app
+NEXT_PUBLIC_API_URL=https://web-production-564c3.up.railway.app
+NEXT_PUBLIC_WS_URL=wss://web-production-564c3.up.railway.app
 ```
 
 ---
@@ -165,7 +165,7 @@ npm run type-check   # TypeScript validation
 
 Deployed on Vercel with auto-deploy from Git.
 
-**Production URL**: https://trench-terminal-omega.vercel.app
+**Production URL**: https://openclaw-trading-d3yx.vercel.app
 
 ---
 

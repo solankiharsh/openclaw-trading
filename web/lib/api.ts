@@ -406,13 +406,13 @@ export async function getAgentConversations(agentId: string): Promise<AgentConve
 
 // ── News & Announcements ──
 
-// // Get news feed (all published news items)
-// export async function getNewsFeed(limit = 10): Promise<NewsItem[]> {
-//   const response = await api.get<NewsFeedResponse>('/news/feed', {
-//     params: { limit },
-//   });
-//   return response.data.items || [];
-// }
+/** Get news feed (features & announcements). Source: backend GET /news/feed → PostgreSQL news_items. */
+export async function getNewsFeed(limit = 10): Promise<NewsItem[]> {
+  const response = await api.get<NewsFeedResponse>('/news/feed', {
+    params: { limit },
+  });
+  return response.data.items ?? [];
+}
 
 // Get featured news item (highest priority)
 export async function getFeaturedNews(): Promise<NewsItem | null> {

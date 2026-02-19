@@ -32,7 +32,7 @@ export function ArchetypeCard({
         flex-1 rounded-2xl p-4 transition-all duration-200
         min-h-[240px] flex flex-col
         ${selected
-          ? 'border-2 border-[#E8B45E] bg-[#E8B45E]/10'
+          ? 'border-2 border-accent-primary bg-accent-primary/10'
           : 'border-2 border-transparent bg-white/[0.04] hover:bg-white/[0.06]'
         }
       `}
@@ -61,8 +61,8 @@ export function ArchetypeCard({
 
       {/* Selected badge */}
       {selected && (
-        <div className="mt-3 bg-[#E8B45E]/20 rounded-lg py-1">
-          <span className="text-[#E8B45E] text-xs font-semibold text-center block">
+        <div className="mt-3 bg-accent-primary/20 rounded-lg py-1">
+          <span className="text-accent-primary text-xs font-semibold text-center block">
             Selected
           </span>
         </div>

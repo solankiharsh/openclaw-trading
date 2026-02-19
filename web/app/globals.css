@@ -11,7 +11,7 @@
 
   html {
     @apply scroll-smooth;
-    background: #000000;
+    background: #0f172a;
   }
 
   body {
@@ -51,11 +51,11 @@
     @apply max-w-container mx-auto px-3 sm:px-6 lg:px-16;
   }
 
-  /* 🟨 CTA Button System (Colosseum Gold) */
+  /* CTA Button System (indigo accent) */
   .btn-primary {
     @apply inline-flex items-center justify-center gap-2;
     @apply px-6 py-3 rounded-pill font-semibold text-base;
-    @apply bg-accent-gradient text-black;
+    @apply bg-accent-gradient text-white;
     @apply transition-all duration-250 ease-smooth;
     @apply hover:brightness-110 hover:scale-[1.02];
     @apply active:scale-[0.98];
@@ -79,7 +79,7 @@
     @apply hover:text-text-primary hover:bg-white/5;
   }
 
-  /* 🟦 Card System (Luxury Dark) */
+  /* Card System */
   .card-base {
     @apply bg-card rounded-card border border-border p-6;
     @apply transition-all duration-250 ease-smooth;
@@ -175,8 +175,8 @@
   /* ✨ Glow Divider Line */
   .glow-divider {
     @apply h-px w-full;
-    background: linear-gradient(90deg, transparent, #E8B45E, transparent);
-    opacity: 0.4;
+    background: linear-gradient(90deg, transparent, #6366f1, transparent);
+    opacity: 0.5;
   }
 
   /* 🎨 Gradient Text */
@@ -217,10 +217,10 @@
     }
   }
 
-  /* 📜 Custom Scrollbar (Gold Accent) */
+  /* 📜 Custom Scrollbar (Indigo Accent) */
   .scrollbar-custom {
     scrollbar-width: thin;
-    scrollbar-color: #E8B45E #0A0A0A;
+    scrollbar-color: #6366f1 #1e293b;
   }
 
   .scrollbar-custom::-webkit-scrollbar {
@@ -277,7 +277,7 @@
 
   /* 🌟 Hero Background FX */
   .hero-glow {
-    background-image: radial-gradient(circle at 50% 0%, rgba(232, 180, 94, 0.25), transparent 60%);
+    background-image: radial-gradient(circle at 50% 0%, rgba(99, 102, 241, 0.2), transparent 60%);
   }
 
   /* 🔥 Responsive Grid Patterns */
@@ -291,7 +291,7 @@
   }
 
   .hover-glow-gold:hover {
-    box-shadow: 0 8px 32px rgba(232, 180, 94, 0.2);
+    box-shadow: 0 8px 32px rgba(99, 102, 241, 0.25);
   }
 
   /* 🏟️ Grid pattern background */
@@ -333,7 +333,7 @@
   }
 
   .animate-shimmer {
-    background: linear-gradient(90deg, transparent, rgba(232,180,94,0.3), transparent);
+    background: linear-gradient(90deg, transparent, rgba(99,102,241,0.35), transparent);
     background-size: 200% 100%;
     animation: shimmer 3s ease-in-out infinite;
   }
@@ -341,7 +341,7 @@
   /* Step connector line */
   .step-connector {
     @apply h-px w-full;
-    background: linear-gradient(90deg, rgba(232,180,94,0.4), rgba(232,180,94,0.1));
+    background: linear-gradient(90deg, rgba(99,102,241,0.5), rgba(99,102,241,0.1));
   }
 
   /* 🎰 Vertical marquee / carousel */
@@ -411,7 +411,7 @@
     position: absolute;
     inset: 0;
     pointer-events: none;
-    border: 1px solid rgba(232, 180, 94, 0.25);
+    border: 1px solid rgba(99, 102, 241, 0.3);
     -webkit-mask-image:
       linear-gradient(to right, transparent, white 25%, white 75%, transparent),
       linear-gradient(to bottom, transparent, white 25%, white 75%, transparent);

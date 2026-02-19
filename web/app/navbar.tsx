@@ -25,7 +25,7 @@ export default function Navbar() {
   };
 
   return (
-    <nav className="bg-bg-primary/95 backdrop-blur-lg sticky top-0 z-50 relative after:absolute after:bottom-0 after:left-1/2 after:-translate-x-1/2 after:h-px after:w-full after:bg-[linear-gradient(90deg,transparent_0%,rgba(232,180,94,0.01)_10%,rgba(232,180,94,0.4)_50%,rgba(232,180,94,0.01)_90%,transparent_100%)]">
+    <nav className="bg-bg-primary/95 backdrop-blur-lg sticky top-0 z-50 relative after:absolute after:bottom-0 after:left-1/2 after:-translate-x-1/2 after:h-px after:w-full after:bg-[linear-gradient(90deg,transparent_0%,rgba(99,102,241,0.08)_10%,rgba(99,102,241,0.4)_50%,rgba(99,102,241,0.08)_90%,transparent_100%)]">
       <div className="container-colosseum">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
@@ -39,7 +39,7 @@ export default function Navbar() {
             />
             <div>
               <GradientText
-                colors={['#E8B45E', '#D4A04A', '#F0C97A', '#E8B45E']}
+                colors={['#6366f1', '#4f46e5', '#818cf8', '#6366f1']}
                 animationSpeed={5}
                 className="text-xl font-bold font-display"
               >

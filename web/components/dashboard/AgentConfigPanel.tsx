@@ -91,7 +91,7 @@ function SliderField({
                 step={step}
                 value={value}
                 onChange={(e) => onChange(Number(e.target.value))}
-                className="w-full h-1 bg-white/[0.08] rounded appearance-none cursor-pointer accent-accent-primary [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-3 [&::-webkit-slider-thumb]:h-3 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-accent-primary [&::-webkit-slider-thumb]:shadow-[0_0_6px_rgba(232,180,94,0.4)]"
+                className="w-full h-1 bg-white/[0.08] rounded appearance-none cursor-pointer accent-accent-primary [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-3 [&::-webkit-slider-thumb]:h-3 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-accent-primary [&::-webkit-slider-thumb]:shadow-[0_0_6px_rgba(99,102,241,0.4)]"
             />
             {description && <p className="text-[10px] text-text-muted mt-0.5">{description}</p>}
         </div>

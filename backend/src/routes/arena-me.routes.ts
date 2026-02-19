@@ -140,4 +140,37 @@ arenaMeRoutes.get('/me', agentJwtMiddleware, async (c) => {
   }
 });
 
+/** GET /arena/me/tracked-wallets/stats — per-wallet PnL and trade count (Pillar 2). */
+arenaMeRoutes.get('/me/tracked-wallets/stats', agentJwtMiddleware, async (c) => {
+  try {
+    const agentId = c.get('agentId');
+
+    const wallets = await db.trackedWallet.findMany({
+      where: { agentId },
+      select: { id: true, address: true, label: true, chain: true },
+    });
+
+    const stats = await Promise.all(
+      wallets.map(async (w) => {
+        const s = await db.trackedWalletStats.findUnique({
+          where: { walletAddress_chain: { walletAddress: w.address, chain: w.chain } },
+        });
+        return {
+          address: w.address,
+          label: w.label ?? null,
+          chain: w.chain,
+          tradeCount: s?.tradeCount ?? 0,
+          totalPnlUsd: s ? Number(s.totalPnlUsd) : 0,
+          winRate: s && s.tradeCount > 0 ? (s.winCount / s.tradeCount) * 100 : 0,
+        };
+      })
+    );
+
+    return c.json({ success: true, wallets: stats });
+  } catch (error: any) {
+    console.error('Tracked wallets stats error:', error);
+    return c.json({ success: false, error: 'Failed to load tracked wallet stats' }, 500);
+  }
+});
+
 export default arenaMeRoutes;

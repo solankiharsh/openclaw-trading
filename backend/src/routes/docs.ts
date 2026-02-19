@@ -68,7 +68,7 @@ docsRoutes.get('/:guide', (c) => {
   
   // Check if guide exists in available list
   if (!AVAILABLE_GUIDES.includes(guide) && guide !== 'skill') {
-    return c.text(`# Error\n\nGuide "${guide}" not found.\n\nAvailable guides:\n${AVAILABLE_GUIDES.map(g => `- ${g}`).join('\n')}\n\nSee: curl https://sr-mobile-production.up.railway.app/api/docs`, 404);
+    return c.text(`# Error\n\nGuide "${guide}" not found.\n\nAvailable guides:\n${AVAILABLE_GUIDES.map(g => `- ${g}`).join('\n')}\n\nSee: curl https://web-production-564c3.up.railway.app/api/docs`, 404);
   }
   
   try {
@@ -76,7 +76,7 @@ docsRoutes.get('/:guide', (c) => {
     const filePath = join(DOCS_DIR, `${guide}.md`);
     
     if (!existsSync(filePath)) {
-      return c.text(`# Error\n\nGuide "${guide}" not found.\n\nRun: curl https://sr-mobile-production.up.railway.app/api/docs`, 404);
+      return c.text(`# Error\n\nGuide "${guide}" not found.\n\nRun: curl https://web-production-564c3.up.railway.app/api/docs`, 404);
     }
     
     const markdown = readFileSync(filePath, 'utf-8');
@@ -104,7 +104,7 @@ docsRoutes.get('/list', (c) => {
     return c.json({
       guides: files,
       total: files.length,
-      baseUrl: 'https://sr-mobile-production.up.railway.app/api/docs'
+      baseUrl: 'https://web-production-564c3.up.railway.app/api/docs'
     });
   } catch (error) {
     return c.json({ error: 'Failed to list guides' }, 500);
