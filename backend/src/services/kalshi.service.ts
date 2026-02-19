@@ -182,8 +182,13 @@ export class KalshiService implements PredictionMarketProvider {
       const response = await this.marketApi.getMarket(ticker);
       if (!response.data?.market) return null;
       return this.mapMarket(response.data.market);
-    } catch (error) {
-      console.error(`[Kalshi] getMarket(${ticker}) error:`, error);
+    } catch (error: unknown) {
+      const status = (error as { response?: { status?: number } })?.response?.status;
+      const msg = (error as Error)?.message ?? 'unknown';
+      // In demo mode (no API key), Kalshi often returns 500 for many markets — don't spam logs
+      const isDemo = !process.env.KALSHI_API_KEY;
+      if (isDemo && status === 500) return null;
+      console.error(`[Kalshi] getMarket(${ticker}) error: ${status ?? 'network'} ${msg}`);
       return null;
     }
   }
@@ -207,8 +212,10 @@ export class KalshiService implements PredictionMarketProvider {
           quantity: level[1] || level.quantity || 0,
         })),
       };
-    } catch (error) {
-      console.error(`[Kalshi] getOrderbook(${ticker}) error:`, error);
+    } catch (error: unknown) {
+      const status = (error as { response?: { status?: number } })?.response?.status;
+      const msg = (error as Error)?.message ?? 'unknown';
+      console.error(`[Kalshi] getOrderbook(${ticker}) error: ${status ?? 'network'} ${msg}`);
       return null;
     }
   }
@@ -306,8 +313,10 @@ export class KalshiService implements PredictionMarketProvider {
             data: { status: fresh.status },
           });
         }
-      } catch (error) {
-        console.error(`[Kalshi] Resolution check failed for ${market.externalId}:`, error);
+      } catch (error: unknown) {
+        const status = (error as { response?: { status?: number } })?.response?.status;
+        const msg = (error as Error)?.message ?? 'unknown';
+        console.error(`[Kalshi] Resolution check failed for ${market.externalId}: ${status ?? 'network'} ${msg}`);
       }
     }
 

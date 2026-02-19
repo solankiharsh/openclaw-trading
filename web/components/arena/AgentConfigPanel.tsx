@@ -230,7 +230,7 @@ export function AgentConfigPanel() {
         <div className="flex items-center justify-between mb-4">
           <div>
             <h3 className="text-white font-semibold text-base flex items-center gap-2">
-              <Wallet className="w-4 h-4 text-[#E8B45E]" />
+              <Wallet className="w-4 h-4 text-accent-primary" />
               Tracked Wallets
             </h3>
             <p className="text-white/40 text-xs mt-1">

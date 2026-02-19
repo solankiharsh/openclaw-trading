@@ -8,6 +8,9 @@ import { db } from './lib/db';
 import { HeliusWebSocketMonitor } from './services/helius-websocket.js';
 import { websocketEvents } from './services/websocket-events.js';
 import { DevPrintFeedService } from './services/devprint-feed.service.js';
+import { createNewTokenScoringCallback } from './services/new-token-scoring.service.js';
+import { createSignalAggregationCallback } from './services/signal-aggregation.service.js';
+import { createNarrativeTrendCallback } from './services/narrative-trend.service.js';
 import { createBSCMonitor } from './services/bsc-monitor.js';
 import { createFourMemeMonitor } from './services/fourmeme-monitor.js';
 
@@ -85,7 +88,9 @@ const allowedOrigins = [
   'http://localhost:3000',
   'http://localhost:8081',
   'exp://localhost:8081',
-  'https://sr-mobile-production.up.railway.app',
+  'https://web-production-564c3.up.railway.app',
+  'https://solharsh.com',
+  'https://www.solharsh.com',
   'https://superclaw.xyz',
   'https://www.superclaw.xyz',
   'https://superclaw.app',
@@ -429,7 +434,15 @@ server.listen(port, '0.0.0.0', () => {
 
 // Start DevPrint feed service (market intelligence relay)
 if (env.DEVPRINT_WS_URL) {
-  devprintFeed = new DevPrintFeedService(env.DEVPRINT_WS_URL);
+  const scoringCb = createNewTokenScoringCallback();
+  const signalsCb = createSignalAggregationCallback();
+  const narrativeCb = createNarrativeTrendCallback();
+  const onEvent = (stream: string, eventType: string, data: unknown) => {
+    scoringCb(stream, eventType, data);
+    signalsCb(stream, eventType, data);
+    narrativeCb(stream, eventType, data);
+  };
+  devprintFeed = new DevPrintFeedService(env.DEVPRINT_WS_URL, onEvent);
   devprintFeed.start().catch((err) => {
     console.error('❌ DevPrint feed failed to start:', err);
   });
@@ -502,10 +515,17 @@ if (enableSortinoCron) {
   console.log('⏭️  Sortino cron disabled on this replica');
 }
 
-// Update Prometheus metrics every 30 seconds
+// Update Prometheus metrics every 30 seconds (skip if previous run still in progress to avoid pool pressure)
+let metricsInFlight = false;
 setInterval(async () => {
-  await updateAgentMetrics(db);
-  await updateEpochMetrics(db);
+  if (metricsInFlight) return;
+  metricsInFlight = true;
+  try {
+    await updateAgentMetrics(db);
+    await updateEpochMetrics(db);
+  } finally {
+    metricsInFlight = false;
+  }
 }, 30000);
 
 // Graceful shutdown

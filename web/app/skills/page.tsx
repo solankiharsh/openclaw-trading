@@ -66,7 +66,7 @@ export default function SkillDocsPage() {
             <div>
               <h1 className="font-display text-2xl md:text-3xl font-bold text-text-primary tracking-wide">
                 <GradientText
-                  colors={['#E8B45E', '#D4A04A', '#F0C97A']}
+                  colors={['#6366f1', '#4f46e5', '#818cf8']}
                   animationSpeed={6}
                   className="font-display"
                 >

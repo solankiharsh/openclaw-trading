@@ -70,23 +70,33 @@ export class TreasuryManagerBSCService {
   }
 
   /**
-   * Load treasury wallet from environment variable
+   * Load treasury wallet from environment variable.
+   * Valid key: 64 hex chars, optional 0x prefix (66 chars). Placeholders like "0x..." are ignored.
    */
   private loadTreasuryWallet() {
-    const privateKey = process.env.BSC_TREASURY_PRIVATE_KEY;
+    const raw = process.env.BSC_TREASURY_PRIVATE_KEY?.trim();
+    if (!raw) {
+      console.warn('⚠️ BSC_TREASURY_PRIVATE_KEY not set - BSC distribution disabled');
+      return;
+    }
 
-    if (!privateKey) {
-      console.warn('⚠️ BSC_TREASURY_PRIVATE_KEY not set - distribution will fail');
+    const privateKey = raw.replace(/^0x/i, '');
+    const isValidHex = /^[0-9a-f]{64}$/i.test(privateKey);
+    if (!isValidHex || raw.toLowerCase() === '0x...') {
+      console.warn(
+        '⚠️ BSC_TREASURY_PRIVATE_KEY is missing or placeholder (need 64-char hex) - BSC distribution disabled'
+      );
       return;
     }
 
     try {
-      this.wallet = new Wallet(privateKey, this.provider);
+      const key = raw.startsWith('0x') ? raw : `0x${privateKey}`;
+      this.wallet = new Wallet(key, this.provider);
       this.usdcContract = new ethers.Contract(USDC_CONTRACT_ADDRESS, ERC20_ABI, this.wallet);
       console.log('✅ BSC Treasury wallet loaded:', this.wallet.address);
     } catch (error) {
       console.error('❌ Failed to load BSC treasury wallet:', error);
-      throw new Error('Invalid BSC_TREASURY_PRIVATE_KEY format');
+      console.warn('⚠️ BSC distribution disabled - fix BSC_TREASURY_PRIVATE_KEY to enable');
     }
   }
 

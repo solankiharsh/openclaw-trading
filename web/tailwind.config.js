@@ -7,52 +7,52 @@ export default {
   ],
   theme: {
   	extend: {
-  		// 🌑 Colosseum Color System
+  		// Slate + Indigo theme (cool dark backgrounds, indigo accent)
   		colors: {
-  			// Background Layers (Pure Black System)
+  			// Background Layers (slate)
   			bg: {
-  				primary: '#000000',
-  				secondary: '#0A0A0A',
-  				elevated: '#111111',
-  				surface: '#141414',
+  				primary: '#0f172a',
+  				secondary: '#1e293b',
+  				elevated: '#334155',
+  				surface: '#1e293b',
   			},
   			
   			// Card System
   			card: {
-  				DEFAULT: '#0A0A0A',
-  				elevated: '#111111',
+  				DEFAULT: '#1e293b',
+  				elevated: '#334155',
   			},
   			
-  			// Luxury Gold Accent (Colosseum Brand)
+  			// Indigo accent
   			accent: {
-  				primary: '#E8B45E',
-  				soft: '#F5C978',
-  				dark: '#D6A04B',
+  				primary: '#6366f1',
+  				soft: '#818cf8',
+  				dark: '#4f46e5',
   			},
   			
   			// Border System
   			border: {
   				subtle: 'rgba(255, 255, 255, 0.06)',
-  				DEFAULT: 'rgba(255, 255, 255, 0.08)',
-  				strong: 'rgba(255, 255, 255, 0.12)',
+  				DEFAULT: 'rgba(255, 255, 255, 0.1)',
+  				strong: 'rgba(255, 255, 255, 0.15)',
   			},
   			
-  			divider: '#1E1E1E',
+  			divider: '#334155',
   			
   			// Text Hierarchy
   			text: {
-  				primary: '#FFFFFF',
-  				secondary: 'rgba(255, 255, 255, 0.7)',
-  				muted: 'rgba(255, 255, 255, 0.45)',
+  				primary: '#f8fafc',
+  				secondary: 'rgba(248, 250, 252, 0.85)',
+  				muted: 'rgba(248, 250, 252, 0.5)',
   			},
   			
   			// Status Colors
-  			success: '#00ff41',
-  			error: '#ff0033',
-  			warning: '#ffaa00',
+  			success: '#22c55e',
+  			error: '#ef4444',
+  			warning: '#f59e0b',
   			
-  			// Keep backward compatibility
-  			'brand-primary': '#E8B45E',
+  			// Backward compatibility
+  			'brand-primary': '#6366f1',
   			'matrix-green': '#00ff41',
   			'solana-purple': '#9945ff',
   		},
@@ -100,11 +100,11 @@ export default {
   			'button': '9999px',
   		},
   		
-  		// ✨ Shadows
+  		// ✨ Shadows (indigo tint)
   		boxShadow: {
-  			glow: '0 20px 60px rgba(0, 0, 0, 0.5)',
-  			'glow-gold': '0 20px 60px rgba(232, 180, 94, 0.3)',
-  			'card-hover': '0 8px 32px rgba(0, 0, 0, 0.4)',
+  			glow: '0 20px 60px rgba(0, 0, 0, 0.4)',
+  			'glow-gold': '0 20px 60px rgba(99, 102, 241, 0.35)',
+  			'card-hover': '0 8px 32px rgba(0, 0, 0, 0.35)',
   		},
   		
   		// 🎭 Animations
@@ -147,10 +147,10 @@ export default {
   			'smooth': 'cubic-bezier(0.4, 0, 0.2, 1)',
   		},
   		
-  		// 🎨 Background Gradients
+  		// 🎨 Background Gradients (indigo accent)
   		backgroundImage: {
-  			'accent-gradient': 'linear-gradient(135deg, #F5C978, #E8B45E)',
-  			'glow-radial': 'radial-gradient(circle at 50% 0%, rgba(232, 180, 94, 0.25), transparent 60%)',
+  			'accent-gradient': 'linear-gradient(135deg, #818cf8, #6366f1)',
+  			'glow-radial': 'radial-gradient(circle at 50% 0%, rgba(99, 102, 241, 0.25), transparent 60%)',
   		},
   	}
   },

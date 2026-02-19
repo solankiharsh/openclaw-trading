@@ -12,7 +12,7 @@ import { useIsMobile } from '@/hooks/useIsMobile';
 // ── Feed node definitions ───────────────────────────────────────
 
 const FEEDS = [
-    { id: 'pumpfun', label: 'PumpFun', desc: 'New token launches', icon: Pill, color: '#E8B45E' },
+    { id: 'pumpfun', label: 'PumpFun', desc: 'New token launches', icon: Pill, color: '#6366f1' },
     { id: 'wallets', label: 'Tracker', desc: 'Smart money moves', icon: Crosshair, color: '#818CF8' },
     { id: 'blitz', label: 'Blitzkrieg', desc: 'Community buy signals', icon: Swords, color: '#34D399' },
     { id: 'narrative', label: 'Narratives', desc: 'Trends & rising themes', icon: Drama, color: '#F472B6' },
@@ -200,7 +200,7 @@ function PulseLayer({
                     id: pulse.id,
                     d: `M ${pts[0].x} ${pts[0].y}` + pts.slice(1).map(p => ` L ${p.x} ${p.y}`).join(''),
                     opacity,
-                    color: FEEDS[pulse.feedIndex]?.color ?? '#E8B45E',
+                    color: FEEDS[pulse.feedIndex]?.color ?? '#6366f1',
                 });
             }
 
@@ -689,7 +689,7 @@ export function AgentDataFlow() {
                             {/* Glow */}
                             <div className="absolute -inset-3 bg-accent-primary/[0.06] blur-xl pointer-events-none group-hover:bg-accent-primary/[0.1] transition-all duration-300" />
 
-                            <div className="relative bg-[#0e0e18]/95 backdrop-blur-xl px-8 py-5 flex items-center gap-5 shadow-[0_0_40px_rgba(232,180,94,0.06)] group-hover:bg-[#0e0e18] transition-colors duration-200">
+                            <div className="relative bg-[#0e0e18]/95 backdrop-blur-xl px-8 py-5 flex items-center gap-5 shadow-[0_0_40px_rgba(99,102,241,0.08)] group-hover:bg-[#0e0e18] transition-colors duration-200">
                                 {/* Corner brackets */}
                                 <span className="absolute top-0 left-0 w-4 h-4 border-t border-l border-accent-primary/40 group-hover:border-accent-primary/60 transition-colors" />
                                 <span className="absolute top-0 right-0 w-4 h-4 border-t border-r border-accent-primary/40 group-hover:border-accent-primary/60 transition-colors" />

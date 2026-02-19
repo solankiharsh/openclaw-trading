@@ -147,7 +147,7 @@ The script loads `backend/.env` and `backend/.env.local`, then verifies the data
 | `BSC_REWARD_TOKEN_ADDRESS` | Token contract for rewards. |
 | `KALSHI_API_KEY` / `KALSHI_PRIVATE_KEY_PEM` / `KALSHI_MODE` | Kalshi prediction markets. |
 | `ANTHROPIC_API_KEY` / `OPENAI_API_KEY` / `GROQ_API_KEY` | LLM services. |
-| `SIWE_DOMAIN` / `SIWE_URI` | Sign-in with Ethereum (defaults to supermolt.xyz). |
+| `SIWE_DOMAIN` / `SIWE_URI` | Sign-in with Ethereum (defaults to solharsh.com). |
 
 ### Quick copy-paste (required only)
 

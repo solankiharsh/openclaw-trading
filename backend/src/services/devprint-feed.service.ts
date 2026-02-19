@@ -62,12 +62,17 @@ const EVENT_ROUTING: Record<string, FeedChannel> = {
 const BASE_RECONNECT_MS = 5_000;
 const MAX_RECONNECT_MS = 30_000;
 
+/** Optional callback for alpha features: new-token scoring, signal aggregation, narrative trend. */
+export type DevPrintOnEvent = (streamName: string, eventType: string, data: unknown) => void;
+
 export class DevPrintFeedService {
   private baseUrl: string;
   private streams: Map<string, StreamConfig> = new Map();
   private running = false;
+  private onEvent: DevPrintOnEvent | undefined;
 
-  constructor(wsUrl: string) {
+  constructor(wsUrl: string, onEvent?: DevPrintOnEvent) {
+    this.onEvent = onEvent;
     // Strip trailing slash
     this.baseUrl = wsUrl.replace(/\/$/, '');
 
@@ -180,6 +185,20 @@ export class DevPrintFeedService {
     // Log periodically (every 100 events per stream)
     if (stream.eventCount % 100 === 0) {
       console.log(`[DevPrintFeed] ${stream.name}: ${stream.eventCount} events relayed`);
+    }
+
+    // Notify alpha pipeline (scoring, aggregation, narrative) before broadcast
+    if (this.onEvent) {
+      try {
+        const result = this.onEvent(stream.name, eventType, data);
+        if (result != null && typeof (result as Promise<unknown>).catch === 'function') {
+          (result as Promise<unknown>).catch((err: unknown) =>
+            console.error('[DevPrintFeed] onEvent callback error:', err)
+          );
+        }
+      } catch (err) {
+        console.error('[DevPrintFeed] onEvent callback error:', err);
+      }
     }
 
     // Broadcast via Socket.IO

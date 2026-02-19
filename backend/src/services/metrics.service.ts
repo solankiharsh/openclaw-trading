@@ -265,8 +265,11 @@ export async function updateAgentMetrics(prisma: any) {
       where: { status: 'ACTIVE' }
     });
     activeAgents.set(count);
-  } catch (error) {
-    console.error('Failed to update agent metrics:', error);
+  } catch (error: unknown) {
+    const msg = error instanceof Error ? error.message : String(error);
+    const code = (error as { code?: string })?.code;
+    if (code === 'P2024') console.warn('Agent metrics skipped: DB connection pool busy (will retry next interval).');
+    else console.error('Failed to update agent metrics:', msg);
   }
 }
 

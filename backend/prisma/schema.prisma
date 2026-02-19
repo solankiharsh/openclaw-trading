@@ -546,12 +546,59 @@ model TrackedWallet {
   chain     Chain    @default(SOLANA)
   createdAt DateTime @default(now())
 
-  agent TradingAgent @relation(fields: [agentId], references: [id], onDelete: Cascade)
+  agent  TradingAgent          @relation(fields: [agentId], references: [id], onDelete: Cascade)
+  trades TrackedWalletTrade[]
 
   @@unique([agentId, address, chain])
   @@index([agentId])
   @@index([address])
   @@map("tracked_wallets")
+}
+
+// ─── Alpha: Whale trade history and PnL (Pillar 2) ───
+
+enum TrackedWalletTradeAction {
+  BUY
+  SELL
+}
+
+model TrackedWalletTrade {
+  id              String                  @id @default(cuid())
+  trackedWalletId String
+  agentId         String
+  walletAddress  String
+  tokenMint      String
+  tokenSymbol    String
+  action         TrackedWalletTradeAction
+  chain          Chain                    @default(SOLANA)
+  amount         Decimal                  @db.Decimal(18, 9) // SOL/BNB
+  tokenAmount    Decimal                  @db.Decimal(18, 9)
+  signature      String?
+  priceUsd       Decimal?                @db.Decimal(18, 6)
+  createdAt      DateTime                 @default(now())
+
+  trackedWallet TrackedWallet @relation(fields: [trackedWalletId], references: [id], onDelete: Cascade)
+
+  @@index([trackedWalletId])
+  @@index([agentId])
+  @@index([walletAddress, chain])
+  @@index([tokenMint])
+  @@index([createdAt])
+  @@map("tracked_wallet_trades")
+}
+
+model TrackedWalletStats {
+  id           String   @id @default(cuid())
+  walletAddress String
+  chain        Chain    @default(SOLANA)
+  totalPnlUsd  Decimal  @default(0) @db.Decimal(18, 6)
+  tradeCount   Int      @default(0)
+  winCount     Int      @default(0)
+  updatedAt    DateTime @updatedAt
+
+  @@unique([walletAddress, chain])
+  @@index([chain])
+  @@map("tracked_wallet_stats")
 }
 
 model BuyTrigger {
@@ -601,6 +648,31 @@ model TokenDeployment {
   @@index([bondingCurveGraduated])
   @@index([platform])
   @@map("token_deployments")
+}
+
+// ─── Alpha: New token alerts (Pillar 1 – PumpFun / new-token monitoring) ───
+
+model NewTokenAlert {
+  id                   String   @id @default(cuid())
+  mint                 String
+  symbol               String
+  name                 String
+  source               String   @default("devprint") // e.g. devprint
+  creatorAddress       String?
+  liquidityUsd         Decimal? @db.Decimal(18, 2)
+  bondingCurveProgress Decimal? @db.Decimal(5, 2) // 0–100
+  devWalletScore       Int?     // 0–100
+  liquidityScore       Int?     // 0–100
+  momentumScore        Int?     // 0–100
+  passedFilter         Boolean  @default(false)
+  rawPayload           Json     @default("{}")
+  createdAt            DateTime @default(now())
+
+  @@index([mint])
+  @@index([source])
+  @@index([passedFilter])
+  @@index([createdAt])
+  @@map("new_token_alerts")
 }
 
 // ─── Monitor State: Persistent block tracking for BSC monitors ───

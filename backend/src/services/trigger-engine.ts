@@ -13,6 +13,7 @@
 
 import { db } from '../lib/db';
 import type { BuyTrigger, TradingAgent, TrackedWallet } from '@prisma/client';
+import { persistWhaleTrades, updatePnLForWallet } from './whale-trade.service.js';
 
 // ── Types ─────────────────────────────────────────────────
 
@@ -27,6 +28,8 @@ export interface DetectedTrade {
   liquidity?: number;
   marketCap?: number;
   volume24h?: number;
+  tokenAmount?: number; // token units (for persistence)
+  priceUsd?: number;
 }
 
 export interface AutoBuyRequest {
@@ -101,6 +104,16 @@ export async function evaluateTriggers(trade: DetectedTrade): Promise<AutoBuyReq
     if (trackers.length === 0) return queued;
 
     console.log(`[TriggerEngine] ${trackers.length} agent(s) tracking wallet ${trade.walletAddress.slice(0, 10)}...`);
+
+    // Pillar 2: persist whale trades for each tracker
+    persistWhaleTrades(trade, trackers).catch((err) =>
+      console.error('[TriggerEngine] persistWhaleTrades failed:', err)
+    );
+    if (trade.action === 'SELL') {
+      updatePnLForWallet(trade.walletAddress, trade.chain).catch((err) =>
+        console.error('[TriggerEngine] updatePnLForWallet failed:', err)
+      );
+    }
 
     for (const tracker of trackers) {
       const agent = tracker.agent;

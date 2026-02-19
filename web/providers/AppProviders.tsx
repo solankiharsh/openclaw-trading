@@ -19,7 +19,7 @@ export default function AppProviders({ children }: { children: ReactNode }) {
         loginMethods: ['email', 'wallet', 'twitter'],
         appearance: {
           theme: 'dark',
-          accentColor: '#E8B45E',
+          accentColor: '#6366f1',
         },
         embeddedWallets: {
           createOnLogin: 'all-users',

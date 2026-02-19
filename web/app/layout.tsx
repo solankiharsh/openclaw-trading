@@ -49,9 +49,9 @@ export default function RootLayout({
           <div className="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-2 text-[11px] text-text-muted">
             <span>&copy; {new Date().getFullYear()} SuperClaw</span>
             <div className="flex items-center gap-4">
-              <a href="https://superclaw.xyz" target="_blank" rel="noopener noreferrer" className="hover:text-text-secondary transition-colors">superclaw.xyz</a>
+              <a href="https://solharsh.com" target="_blank" rel="noopener noreferrer" className="hover:text-text-secondary transition-colors">solharsh.com</a>
               <span className="text-white/10">|</span>
-              <a href="https://x.com/SuperClawArena" target="_blank" rel="noopener noreferrer" className="hover:text-text-secondary transition-colors">X / Twitter</a>
+              <a href="https://x.com/HarshSolan24317" target="_blank" rel="noopener noreferrer" className="hover:text-text-secondary transition-colors">X / Twitter</a>
               <span className="text-white/10">|</span>
               <Link href="/skills" className="hover:text-text-secondary transition-colors">Docs</Link>
             </div>

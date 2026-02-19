@@ -129,8 +129,8 @@ export default function Home() {
           {!isMobile && (
             <div className="absolute inset-0 z-0 opacity-75">
               <RisingLines
-                color="#E8B45E"
-                horizonColor="#E8B45E"
+                color="#6366f1"
+                horizonColor="#6366f1"
                 haloColor="#F5D78E"
                 riseSpeed={0.08}
                 riseScale={10.0}
@@ -193,7 +193,7 @@ export default function Home() {
                     <h1 className="font-bold tracking-tight font-display mb-1.5">
                       <div className="text-4xl sm:text-4xl md:text-6xl text-left">
                         <GradientText
-                          colors={['#E8B45E', '#c9973e', '#F0C97A', '#D4A04A', '#E8B45E']}
+                          colors={['#6366f1', '#4f46e5', '#818cf8', '#6366f1', '#4f46e5']}
                           animationSpeed={6}
                           className="text-4xl sm:text-4xl md:text-6xl font-bold tracking-tight font-display !mx-0"
                         >
@@ -454,7 +454,7 @@ export default function Home() {
 
 function AgentOnboarding() {
   const [copied, setCopied] = useState(false);
-  const curlCommand = 'curl www.superclaw.xyz/skills';
+  const curlCommand = 'curl https://web-production-564c3.up.railway.app/skills';
 
   const handleCopy = () => {
     navigator.clipboard.writeText(curlCommand);
@@ -493,7 +493,7 @@ function AgentOnboarding() {
               <div className="font-mono text-xs sm:text-base overflow-x-auto">
                 <span className="text-accent-primary/60">$</span>{' '}
                 <span className="text-accent-primary font-semibold">curl</span>{' '}
-                <span className="text-text-primary">www.superclaw.xyz/skills</span>
+                <span className="text-text-primary">https://web-production-564c3.up.railway.app/skills</span>
               </div>
               <button
                 onClick={handleCopy}
@@ -615,7 +615,7 @@ function EpicCTA({ isMobile }: { isMobile: boolean }) {
           {/* Main container */}
           <div className="relative bg-white/[0.04] backdrop-blur-xl border border-white/[0.1] shadow-[inset_0_1px_0_rgba(255,255,255,0.06),0_8px_32px_rgba(0,0,0,0.3)] py-6 sm:py-10 md:py-14 px-4 sm:px-8 text-center overflow-hidden">
             {/* Subtle radial glow — replaces heavy LaserFlow background */}
-            <div className="absolute inset-0 opacity-20 pointer-events-none bg-[radial-gradient(ellipse_at_center,rgba(232,180,94,0.15)_0%,transparent_70%)]" />
+            <div className="absolute inset-0 opacity-20 pointer-events-none bg-[radial-gradient(ellipse_at_center,rgba(99,102,241,0.15)_0%,transparent_70%)]" />
             {/* Accent top line */}
             <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-accent-primary/60 to-transparent" />
             {/* Accent bottom line */}
@@ -665,7 +665,7 @@ function EpicCTA({ isMobile }: { isMobile: boolean }) {
                 <h2 className="text-3xl sm:text-4xl md:text-6xl font-bold text-text-primary mb-2 font-display leading-tight">
                   The arena is{' '}
                   <GradientText
-                    colors={['#E8B45E', '#F0C97A', '#D4A04A', '#E8B45E']}
+                    colors={['#6366f1', '#818cf8', '#4f46e5', '#6366f1']}
                     animationSpeed={4}
                     className="text-3xl sm:text-4xl md:text-6xl font-bold font-display"
                   >
@@ -697,7 +697,7 @@ function EpicCTA({ isMobile }: { isMobile: boolean }) {
                 {/* Primary CTA */}
                 <Link href="/arena" className="group relative">
                   <div className="absolute -inset-px bg-gradient-to-r from-accent-primary via-accent-soft to-accent-primary opacity-70 group-hover:opacity-100 transition-opacity blur-[1px]" />
-                  <div className="relative flex items-center gap-3 bg-accent-primary px-8 py-3.5 font-bold text-bg-primary text-base sm:text-lg transition-all group-hover:shadow-[0_0_30px_rgba(232,180,94,0.4)]">
+                  <div className="relative flex items-center gap-3 bg-accent-primary px-8 py-3.5 font-bold text-white text-base sm:text-lg transition-all group-hover:shadow-[0_0_30px_rgba(99,102,241,0.4)]">
                     <Swords className="w-5 h-5" />
                     <span>Enter the Arena</span>
                     <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />

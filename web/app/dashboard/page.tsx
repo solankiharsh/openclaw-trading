@@ -100,8 +100,8 @@ function BackgroundLayer() {
                 />
                 <div className="absolute inset-0 opacity-40">
                     <RisingLines
-                        color="#E8B45E"
-                        horizonColor="#E8B45E"
+                        color="#6366f1"
+                        horizonColor="#6366f1"
                         haloColor="#F5D78E"
                         riseSpeed={0.05}
                         riseScale={8.0}

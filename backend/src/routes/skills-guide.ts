@@ -32,6 +32,6 @@ skillsGuide.get('/', (c) => {
     });
   } catch (error) {
     console.error('Failed to read quickstart guide:', error);
-    return c.text('# Error\n\nQuickstart guide not found.\n\nTry: curl sr-mobile-production.up.railway.app/api/docs', 404);
+    return c.text('# Error\n\nQuickstart guide not found.\n\nTry: curl web-production-564c3.up.railway.app/api/docs', 404);
   }
 });
